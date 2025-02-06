@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "../../drake-robot-arm"
+		},
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"chrono": "cpp"
+		}
+	}
+}

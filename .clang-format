@@ -3,7 +3,7 @@
 # This file determines clang-format's style settings; for details, refer to
 # http://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
-BasedOnStyle:  Google
+BasedOnStyle:  Microsoft
 
 Language: Cpp
 

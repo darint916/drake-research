@@ -1,0 +1,74 @@
+# simulation_length: 2.0
+# time_step: 0.0001
+# log_period: 0.1
+simulation_length: 1.0
+time_step: 0.00001
+log_period: 0.00001
+sine_rw:
+  amplitude: 02.7
+  frequency: 030
+  phase: 0
+# sine_rw:
+#   amplitude: 02.7
+#   frequency: 030
+#   phase: 0
+sine_lw:
+  amplitude: 0
+  frequency: 0
+  phase: 0
+center_pressure_body_rw:
+  - x: 0.00833
+    y: -0.025
+    z: 0
+  - x: 0.02499
+    y: -0.025
+    z: 0
+  - x: 0.04165
+    y: -0.025
+    z: 0
+  - x: 0.05831
+    y: -0.025
+    z: 0
+  - x: 0.07497
+    y: -0.025
+    z: 0
+  - x: 0.09163
+    y: -0.025
+    z: 0
+  - x: 0.10829
+    y: -0.025
+    z: 0
+  - x: 0.12495
+    y: -0.025
+    z: 0
+  - x: 0.14161
+    y: -0.025
+    z: 0
+center_pressure_body_lw:
+  # - x: -0.00833
+  #   y: -0.025
+  #   z: 0
+  # - x: -0.02499
+  #   y: -0.025
+  #   z: 0
+  # - x: -0.04165
+  #   y: -0.025
+  #   z: 0
+  # - x: -0.05831
+  #   y: -0.025
+  #   z: 0
+  - x: -0.07497
+    y: -0.025
+    z: 0
+  # - x: -0.09163
+  #   y: -0.025
+  #   z: 0
+  # - x: -0.10829
+  #   y: -0.025
+  #   z: 0
+  # - x: -0.12495
+  #   y: -0.025
+  #   z: 0
+  # - x: -0.14161
+  #   y: -0.025
+  #   z: 0
