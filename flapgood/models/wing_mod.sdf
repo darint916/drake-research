@@ -1,0 +1,246 @@
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <world name="world">
+    <!-- Define gravity and physics properties -->
+    <gravity>0 0 -9.81</gravity>
+    <physics name="default_physics" type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+    </physics>
+
+    <!-- Simple ground plane for visualization -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="ground_link">
+        <collision name="ground_collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="ground_visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>50 50</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.7 0.7 0.7 1</ambient>
+            <diffuse>0.7 0.7 0.7 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Four-bar linkage model -->
+    <model name="four_bar_linkage">
+      <!-- Link A (Crank) attached to the world -->
+      <link name="A">
+        <pose>0 0 0 0 0 0</pose>
+        <inertial>
+          <!-- Center of mass at the midpoint of the link -->
+          <pose>2 0 0 0 0 0</pose>
+          <mass>20</mass>
+          <inertia>
+            <ixx>0.08333</ixx>
+            <iyy>29.46667</iyy>
+            <izz>29.41667</izz>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <visual name="A_visual">
+          <!-- A red box aligned along the x-axis -->
+          <pose>2 0 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>4.2 0.1 0.2</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>1 0 0 1</diffuse>
+          </material>
+        </visual>
+        <!-- A small cylinder to represent the revolute pivot -->
+        <visual name="A_pivot_visual">
+          <pose>0 0 0 1.5708 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.01</radius>
+              <length>0.15</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- Link B (Coupler) -->
+      <link name="B">
+        <!-- Pose is defined relative to link A -->
+        <pose relative_to="A">4 0 0 0 0 0</pose>
+        <inertial>
+          <pose>2 0 0 0 0 0</pose>
+          <mass>20</mass>
+          <inertia>
+            <ixx>0.08333</ixx>
+            <iyy>29.46667</iyy>
+            <izz>29.41667</izz>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <visual name="B_visual">
+          <pose>2 0 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>4.2 0.1 0.2</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+        <!-- Visual pivot between A and B -->
+        <visual name="B_pivot_visual">
+          <pose>0 0 0 1.5708 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.01</radius>
+              <length>0.15</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+        <!-- Frame for bushing connection on link B -->
+        <frame name="B_bushing" attached_to="B">
+          <!-- Place at the end of B along the x-axis and rotate so that the bushing z-axis avoids gimbal lock -->
+          <pose relative_to="B">4 0 0 -1.5708 0 0</pose>
+        </frame>
+      </link>
+
+      <!-- Link C (Rocker) attached to the world -->
+      <link name="C">
+        <!-- Pose of C in the world (offset so that the four-bar loop can close) -->
+        <pose>-2 0 0 0 0 0</pose>
+        <inertial>
+          <pose>2 0 0 0 0 0</pose>
+          <mass>20</mass>
+          <inertia>
+            <ixx>0.08333</ixx>
+            <iyy>29.46667</iyy>
+            <izz>29.41667</izz>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <visual name="C_visual">
+          <pose>2 0 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>4.2 0.1 0.2</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>1 1 0 1</diffuse>
+          </material>
+        </visual>
+        <!-- Visual pivot for C -->
+        <visual name="C_pivot_visual">
+          <pose>0 0 0 1.5708 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.01</radius>
+              <length>0.15</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+        <!-- Frame for bushing connection on link C -->
+        <frame name="C_bushing" attached_to="C">
+          <!-- Place at the end of C along the x-axis with a rotation similar to B_bushing -->
+          <pose relative_to="C">4 0 0 -1.5708 0 0</pose>
+        </frame>
+      </link>
+
+      <!-- Revolute joints -->
+      <!-- Joint connecting world to Link A -->
+      <joint name="joint_WA" type="revolute">
+        <parent>world</parent>
+        <child>A</child>
+        <pose>0 0 0 0 0 0</pose>
+        <axis>
+          <xyz>0 1 0</xyz>
+          <limit/>
+          <dynamics>
+            <damping>0.0</damping>
+          </dynamics>
+        </axis>
+      </joint>
+
+      <!-- Joint connecting Link A to Link B -->
+      <joint name="joint_AB" type="revolute">
+        <parent>A</parent>
+        <child>B</child>
+        <!-- Place the joint at the end of A (i.e. at x=4 in A’s frame) -->
+        <pose relative_to="A">4 0 0 0 0 0</pose>
+        <axis>
+          <xyz>0 1 0</xyz>
+          <limit>
+            <!-- Zero effort indicates an unactuated joint -->
+            <effort>0</effort>
+          </limit>
+          <dynamics>
+            <damping>0.0</damping>
+          </dynamics>
+        </axis>
+      </joint>
+
+      <!-- Joint connecting world to Link C -->
+      <joint name="joint_WC" type="revolute">
+        <parent>world</parent>
+        <child>C</child>
+        <pose>-2 0 0 0 0 0</pose>
+        <axis>
+          <xyz>0 1 0</xyz>
+          <limit>
+            <effort>0</effort>
+          </limit>
+          <dynamics>
+            <damping>0.0</damping>
+          </dynamics>
+        </axis>
+      </joint>
+
+      <!-- Note:
+           There is no direct joint connecting Link B to Link C.
+           Instead, a LinearBushingRollPitchYaw force element (added in sdf_sim.cc)
+           will be used to tie frame "B_bushing" (on Link B) and frame "C_bushing" (on Link C)
+           together. This completes the closed four–bar loop. -->
+    </model>
+    
+    <!-- Optional light for better visualization -->
+    <light type="directional" name="sun">
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+  </world>
+</sdf>

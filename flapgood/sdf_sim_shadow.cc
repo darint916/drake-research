@@ -67,8 +67,7 @@ int DoMain() {
       &builder, std::make_unique<MultibodyPlant<double>>(0.0));
 
   // Load the four-bar model from its SDF file.
-  // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_bar.sdf";
-  const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_bar_wield.sdf";
+  const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_bar.sdf";
   Parser parser(&four_bar);
   parser.AddModels(sdf_url);
 
@@ -90,10 +89,10 @@ int DoMain() {
   const Vector3d torque_damping_constants{d_rpy, d_rpy, 0};         // N·m·s/rad
 
   // Add the linear bushing force element to model the kinematic loop.
-  four_bar.AddForceElement<LinearBushingRollPitchYaw>(
-      frame_Bc, frame_Cb,
-      torque_stiffness_constants, torque_damping_constants,
-      force_stiffness_constants, force_damping_constants);
+//   four_bar.AddForceElement<LinearBushingRollPitchYaw>(
+//       frame_Bc, frame_Cb,
+//       torque_stiffness_constants, torque_damping_constants,
+//       force_stiffness_constants, force_damping_constants);
 
   // Finalize the MultibodyPlant.
   four_bar.Finalize();

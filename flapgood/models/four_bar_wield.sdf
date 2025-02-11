@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<sdf version="1.7" xmlns:drake="http://drake.mit.edu">
+
+  <model name="four_bar_weld">
+    <!-- Add a dummy base link to serve as the world attachment point.
+         This link is light and used solely to provide a unique frame.
+         Note: The mass/inertia values are chosen to be negligible. -->
+    <link name="base">
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>1e-3</mass>
+        <inertia>
+          <ixx>1e-6</ixx>
+          <iyy>1e-6</iyy>
+          <izz>1e-6</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+    </link>
+
+    <!-- Define world-attachment frames on the base link -->
+    <frame name="Wd" attached_to="base">
+      <pose relative_to="base">-2 0 0 0 0 0</pose>
+    </frame>
+    <frame name="Wr" attached_to="base">
+      <pose relative_to="base">2 0 0 0 0 0</pose>
+    </frame>
+
+    <!-- Define the remaining links and frames as before -->
+    <link name="driver">
+      <inertial>
+        <pose>0 0.5 0 0 0 0</pose>
+        <mass>1</mass>
+        <inertia>
+          <ixx>0.0833333333333333</ixx>
+          <iyy>0</iyy>
+          <izz>0.0833333333333333</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+    </link>
+    <frame name="Dc" attached_to="driver">
+      <pose relative_to="driver">0 1 0 0 0 0</pose>
+    </frame>
+
+    <link name="rocker">
+      <inertial>
+        <pose>0 1 0 0 0 0</pose>
+        <mass>2</mass>
+        <inertia>
+          <ixx>0.6666666666666667</ixx>
+          <iyy>0</iyy>
+          <izz>0.6666666666666667</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+    </link>
+    <frame name="Rs" attached_to="rocker">
+      <pose relative_to="rocker">0 2 0 0 0 0</pose>
+    </frame>
+
+    <link name="coupler">
+      <inertial>
+        <pose>2.4 0 0 0 0 0</pose>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0</ixx>
+          <iyy>0.96</iyy>
+          <izz>0.96</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+    </link>
+    <frame name="Ccm" attached_to="coupler">
+      <pose relative_to="coupler">2.4 0 0 0 0 0</pose>
+    </frame>
+
+    <link name="shadow">
+      <inertial>
+        <pose>2.4 0 0 0 0 0</pose>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0</ixx>
+          <iyy>0.96</iyy>
+          <izz>0.96</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+    </link>
+    <frame name="Scm" attached_to="shadow">
+      <pose relative_to="shadow">2.4 0 0 0 0 0</pose>
+    </frame>
+    <frame name="Sr" attached_to="shadow">
+      <pose relative_to="shadow">4.8 0 0 0 0 0</pose>
+    </frame>
+
+    <!-- Define the joints, now referring to the frames attached to base -->
+
+    <joint name="world_driver" type="revolute">
+      <parent>Wd</parent>
+      <child>driver</child>
+      <axis>
+        <xyz expressed_in="base">0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <joint name="world_rocker" type="revolute">
+      <parent>Wr</parent>
+      <child>rocker</child>
+      <axis>
+        <xyz expressed_in="base">0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <joint name="driver_coupler" type="revolute">
+      <parent>Dc</parent>
+      <child>coupler</child>
+      <axis>
+        <xyz expressed_in="coupler">0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <joint name="rocker_shadow" type="revolute">
+      <parent>Rs</parent>
+      <child>Sr</child>
+      <axis>
+        <xyz expressed_in="rocker">0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <!-- Add a weld constraint to rejoin the split coupler and shadow links -->
+    <drake:weld_constraint>
+      <parent>Ccm</parent>
+      <child>Scm</child>
+    </drake:weld_constraint>
+
+  </model>
+</sdf>
