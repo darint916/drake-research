@@ -44,7 +44,7 @@ DEFINE_double(torque_damping, 1500,
               "Rotational damping (N·m·s/rad) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(applied_torque, 0.0,
               "Constant torque applied at joint_WA.");
-DEFINE_double(initial_velocity, 3.0,
+DEFINE_double(initial_velocity, 0.1,
               "Initial angular rate (radians per second) at joint_WA.");
 
 // Wrap the simulation in a dedicated namespace.
@@ -68,6 +68,7 @@ int DoMain() {
 
   // Load the four-bar model from its SDF file.
   const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/wing_asm_simple.sdf";
+  // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_bar.sdf";
   // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_bar_wield.sdf";
   Parser parser(&four_bar);
   parser.AddModels(sdf_url);
