@@ -42,9 +42,9 @@ DEFINE_double(torque_stiffness, 30000,
               "Rotational stiffness (N·m/rad) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(torque_damping, 1500,
               "Rotational damping (N·m·s/rad) for the LinearBushingRollPitchYaw force element.");
-DEFINE_double(applied_torque, 0.0,
+DEFINE_double(applied_torque, 0.000000001,
               "Constant torque applied at joint_WA.");
-DEFINE_double(initial_velocity, 0.1,
+DEFINE_double(initial_velocity, 0.2,
               "Initial angular rate (radians per second) at joint_WA.");
 
 // Wrap the simulation in a dedicated namespace.
@@ -74,25 +74,25 @@ int DoMain() {
   parser.AddModels(sdf_url);
 
   // Retrieve the two frames for the bushing.
-  // const auto& frame_Bc = four_bar.GetFrameByName("Bc_bushing");
-  // const auto& frame_Cb = four_bar.GetFrameByName("Cb_bushing");
+  // const auto& frame_Hr = four_bar.GetFrameByName("humerus_radial_bushing");
+  // const auto& frame_Rh = four_bar.GetFrameByName("radial_humerus_bushing");
 
-  // Define stiffness and damping constants (using the same value for each axis).
+  // // Define stiffness and damping constants (using the same value for each axis).
   // const double k_xyz = FLAGS_force_stiffness;
   // const double d_xyz = FLAGS_force_damping;
   // const double k_rpy = FLAGS_torque_stiffness;
   // const double d_rpy = FLAGS_torque_damping;
 
-  // For this demo we assume that only a revolute (z-axis) degree-of-freedom is active.
-  // Thus, we choose nonzero stiffness/damping only for the first two rotational axes.
+  // // For this demo we assume that only a revolute (z-axis) degree-of-freedom is active.
+  // // Thus, we choose nonzero stiffness/damping only for the first two rotational axes.
   // const Vector3d force_stiffness_constants{k_xyz, k_xyz, k_xyz};  // N/m
   // const Vector3d force_damping_constants{d_xyz, d_xyz, d_xyz};      // N·s/m
-  // const Vector3d torque_stiffness_constants{k_rpy, k_rpy, 0};       // N·m/rad
-  // const Vector3d torque_damping_constants{d_rpy, d_rpy, 0};         // N·m·s/rad
+  // const Vector3d torque_stiffness_constants{k_rpy, k_rpy, 0};
+  // const Vector3d torque_damping_constants{d_rpy, d_rpy, 0}; // N·m·s/rad
 
-  // Add the linear bushing force element to model the kinematic loop.
+  // // Add the linear bushing force element to model the kinematic loop.
   // four_bar.AddForceElement<LinearBushingRollPitchYaw>(
-  //     frame_Bc, frame_Cb,
+  //     frame_Hr, frame_Rh,
   //     torque_stiffness_constants, torque_damping_constants,
   //     force_stiffness_constants, force_damping_constants);
 
@@ -107,29 +107,29 @@ int DoMain() {
 
   // Create a context for the diagram and extract the subcontext for the MultibodyPlant.
   std::unique_ptr<drake::systems::Context<double>> diagram_context = diagram->CreateDefaultContext();
-  // auto& plant_context = four_bar.GetMyMutableContextFromRoot(diagram_context.get());
+  auto& plant_context = four_bar.GetMyMutableContextFromRoot(diagram_context.get());
 
   // Apply a constant torque at joint_WA.
-  // four_bar.get_actuation_input_port().FixValue(&plant_context, FLAGS_applied_torque);
+  four_bar.get_actuation_input_port().FixValue(&plant_context, FLAGS_applied_torque);
 
   // Set initial conditions.
   // Retrieve joints by name.
-  // const RevoluteJoint<double>& joint_WA = four_bar.GetJointByName<RevoluteJoint>("joint_WA");
-  // const RevoluteJoint<double>& joint_AB = four_bar.GetJointByName<RevoluteJoint>("joint_AB");
-  // const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
+  const RevoluteJoint<double>& driving_joint = four_bar.GetJointByName<RevoluteJoint>("driving_joint");
+  const RevoluteJoint<double>& joint_AB = four_bar.GetJointByName<RevoluteJoint>("humerus_joint");
+  const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("mid_radial_joint");
 
   // Initialize joint angles.
-  // Here we choose the angles so that joint_WA ≈ 75.52°, joint_AB and joint_WC ≈ 104.48°.
+  // Here we choose the angles so that driving_joint ≈ 75.52°, joint_AB and joint_WC ≈ 104.48°.
   // const double qA = std::atan2(std::sqrt(15.0), 1.0);
   // const double qB = M_PI - qA;
   // const double qC = qB;
+  // const double qC = 0.0383 * std::sin(0.261799);
+  driving_joint.set_angle(&plant_context, 0.261799);
+  joint_AB.set_angle(&plant_context, -0.261799);
+  joint_WC.set_angle(&plant_context, 0.261799);
 
-  // joint_WA.set_angle(&plant_context, qA);
-  // joint_AB.set_angle(&plant_context, qB);
-  // joint_WC.set_angle(&plant_context, qC);
-
-  // Set the initial angular rate for joint_WA.
-  // joint_WA.set_angular_rate(&plant_context, FLAGS_initial_velocity);
+  // Set the initial angular rate for driving_joint.
+  driving_joint.set_angular_rate(&plant_context, FLAGS_initial_velocity);
 
   // Optionally, one might record the simulation start time.
   auto start_time = std::chrono::high_resolution_clock::now();

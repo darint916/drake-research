@@ -4,15 +4,15 @@
     <link name='driving_link'>
       <!-- <pose relative_to='driving_joint'>0 0 0 0 0 0</pose> -->
       <inertial>
-        <pose>0 0 0 0 0 0</pose>
+        <pose>0 0 -0.01915 0 0 0</pose>
         <mass>0.00016893</mass>
         <inertia>
-          <ixx>0.08333333333333334</ixx>
-          <iyy>29.46666666666666</iyy>
-          <izz>29.416666666666668</izz>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyz>0</iyz>
+          <ixx>2.067389975625e-08</ixx>
+          <iyy>2.067389975625e-08</iyy>
+          <izz>4.75115625e-11</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
         </inertia>
       </inertial>
       <visual name='driving_link_visual'>
@@ -36,12 +36,11 @@
       <axis>
         <xyz expressed_in="__model__">0 1 0</xyz>
         <limit>
-          <lower>-1.79769e+308</lower>
-          <upper>1.79769e+308</upper>
+          <effort>0</effort>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
-          <spring_stiffness>0.001</spring_stiffness>
+          <spring_stiffness>0.000</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -49,15 +48,15 @@
     <link name='humerus'>
       <pose relative_to='driving_link'>0 0.0 -0.03830 0 1.57 0</pose>
       <inertial>
-        <pose>0.001375 0.00175 0.013055 0 0 0</pose>
-        <mass>0.0030354999999999998</mass>
+        <pose>0 0 -0.02 0 0 0</pose>
+        <mass>0.00016893</mass>
         <inertia>
-          <ixx>3.0067e-09</ixx>
-          <ixy>-1.1299e-25</ixy>
-          <ixz>-2.3232e-24</ixz>
-          <iyy>2.9301e-09</iyy>
-          <iyz>8.4040999999999998e-16</iyz>
-          <izz>3.8589e-10</izz>
+          <ixx>2.2547755781250002e-08</ixx>
+          <iyy>2.2547755781250002e-08</iyy>
+          <izz>4.75115625e-11</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
         </inertia>
       </inertial>
       <visual name='humerus_visual'>
@@ -78,15 +77,15 @@
     <link name='radius'>
       <pose relative_to='humerus'>0 0 -0.04 0 -1.57 0 </pose>
       <inertial>
-        <pose>0.0015 0.00175 -0.03576 0 0 0</pose>
-        <mass>0.00071232000000000001</mass>
+        <pose>0 0 0.05 0 0 0</pose>
+        <mass>0.00071232</mass>
         <inertia>
-          <ixx>4.3980000000000001e-08</ixx>
-          <ixy>-9.9168000000000003e-19</ixy>
-          <ixz>4.8890000000000004e-15</ixz>
-          <iyy>4.4758000000000003e-08</iyy>
-          <iyz>-8.2275000000000001e-16</iyz>
-          <izz>1.8231e-09</izz>
+          <ixx>5.937001700000001e-07</ixx>
+          <iyy>5.937001700000001e-07</iyy>
+          <izz>2.0034e-10</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
         </inertia>
       </inertial>
       <visual name='radius_visual'>
@@ -121,22 +120,26 @@
     </joint> -->
 
     <frame name="radial_world_anchor" attached_to="radius">
-      <pose relative_to="radius">0 0 0.05 0 0 0</pose>
+      <pose relative_to="radius">0 0 0.0383 0 0 0</pose>
     </frame>
-    <frame name="world_radial_anchor" attached_to="__model__">
+    <!-- <frame name="world_radial_anchor" attached_to="__model__">
       <pose relative_to="__model__">0.005972 0 0.01403177573 -3.141585307179587 -0.93281 -1.5708</pose>
-    </frame>
+    </frame> -->
     <joint name='mid_radial_joint' type='revolute'>
-      <parent>world_radial_anchor</parent>
+      <parent>world</parent>
       <child>radial_world_anchor</child>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        <!-- <limit>
           <effort>0</effort>
+        </limit> -->
+        <limit>
+          <lower>-1.79769e+308</lower>
+          <upper>1.79769e+308</upper>
         </limit>
         <dynamics>
           <damping>0</damping>
-          <spring_stiffness>0</spring_stiffness>
+          <spring_stiffness>0.0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -149,18 +152,22 @@
         <limit>
           <effort>0</effort>
         </limit>
+        <!-- <limit>
+          <lower>-1.79769e+308</lower>
+          <upper>1.79769e+308</upper>
+        </limit> -->
         <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0.00001</spring_stiffness>
+          <spring_stiffness>0.00000001</spring_stiffness>
+          <damping>0.00000001</damping>
         </dynamics>
       </axis>
     </joint>
 
     <frame name="humerus_radial_bushing" attached_to="humerus">
-      <pose relative_to="humerus">0 0 -0.04 0 -1.57079632679 0 </pose>
+      <pose relative_to="humerus">0 0 -0.04 0 0 0 </pose>
     </frame>
     <frame name="radial_humerus_bushing" attached_to="radius">
-      <pose relative_to="radius">4 0 0 -1.57079632679 0 0</pose>
+      <pose relative_to="radius">0 0 0 0 0 0</pose>
     </frame>
   </model>
 </sdf>
