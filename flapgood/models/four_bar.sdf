@@ -241,8 +241,8 @@
       </axis>
     </joint>
     <joint name="joint_AB" type="revolute">
-      <child>B</child>
       <parent>A</parent>
+      <child>B</child>
       <axis>
         <xyz expressed_in="__model__">0 1 0</xyz>
         <limit>
@@ -254,8 +254,8 @@
       </axis>
     </joint>
     <joint name="joint_WC" type="revolute">
-      <child>CWorld</child>
       <parent>world</parent>
+      <child>CWorld</child>
       <axis>
         <xyz expressed_in="__model__">0 1 0</xyz>
         <limit>
