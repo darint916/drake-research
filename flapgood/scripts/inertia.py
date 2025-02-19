@@ -44,3 +44,7 @@ print("<izz>"+str(I_zz)+"</izz>")
 print("<ixy>"+str(I_xy)+"</ixy>")
 print("<ixz>"+str(I_xz)+"</ixz>")
 print("<iyz>"+str(I_yz)+"</iyz>")
+
+
+link_length = 4.0
+joint_to_hum = 2

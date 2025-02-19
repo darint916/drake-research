@@ -44,7 +44,7 @@ DEFINE_double(torque_damping, 1500,
               "Rotational damping (N·m·s/rad) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(applied_torque, 0.0,
               "Constant torque applied at joint_WA.");
-DEFINE_double(initial_velocity, 0.01,
+DEFINE_double(initial_velocity, 0.2,
               "Initial angular rate (radians per second) at joint_WA.");
 
 // Wrap the simulation in a dedicated namespace.
@@ -68,17 +68,18 @@ int DoMain() {
 
   // Load the four-bar model from its SDF file.
   // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/wing_asm_simple.sdf";
-  const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/wing_asm_flat.sdf";
+  // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/wing_asm_flat.sdf";
+  const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_more.sdf";
   // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_bar.sdf";
   // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_bar_wield.sdf";
   Parser parser(&four_bar);
   parser.AddModels(sdf_url);
 
   // Retrieve the two frames for the bushing.
-  const auto& frame_Hr = four_bar.GetFrameByName("humerus_radial_bushing");
-  const auto& frame_Rh = four_bar.GetFrameByName("radial_humerus_bushing");
-  // const auto& frame_Hr = four_bar.GetFrameByName("Bc_bushing");
-  // const auto& frame_Rh = four_bar.GetFrameByName("Cb_bushing");
+  // const auto& frame_Hr = four_bar.GetFrameByName("humerus_radial_bushing");
+  // const auto& frame_Rh = four_bar.GetFrameByName("radial_humerus_bushing");
+  const auto& frame_Hr = four_bar.GetFrameByName("Bc_bushing");
+  const auto& frame_Rh = four_bar.GetFrameByName("Cb_bushing");
 
   // Define stiffness and damping constants (using the same value for each axis).
   const double k_xyz = FLAGS_force_stiffness;
@@ -117,43 +118,23 @@ int DoMain() {
 
   // Set initial conditions.
   // Retrieve joints by name.
-  const RevoluteJoint<double>& driving_joint = four_bar.GetJointByName<RevoluteJoint>("driving_joint");
-  const RevoluteJoint<double>& joint_AB = four_bar.GetJointByName<RevoluteJoint>("humerus_joint");
-  const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("mid_radial_joint");
+  // const RevoluteJoint<double>& driving_joint = four_bar.GetJointByName<RevoluteJoint>("driving_joint");
+  // const RevoluteJoint<double>& joint_AB = four_bar.GetJointByName<RevoluteJoint>("humerus_joint");
+  // const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("mid_radial_joint");
 
   // Initialize joint angles.
   // Here we choose the angles so that driving_joint ≈ 75.52°, joint_AB and joint_WC ≈ 104.48°.
-  const double qA = std::atan2(std::sqrt(15.0), 1.0);
-  const double qB = M_PI - qA;
-  const double qC = qB;
+  // const double qA = std::atan2(std::sqrt(15.0), 1.0);
+  // const double qB = M_PI - qA;
+  // const double qC = qB;
   // const double qC = 0.0383 * std::sin(0.261799);
   // driving_joint.set_angle(&plant_context, 0.261799);
   // joint_AB.set_angle(&plant_context, -0.261799);
   // joint_WC.set_angle(&plant_context, 0.261799);
   
-  driving_joint.set_angle(&plant_context, qA);
-  // Set the initial angular rate for driving_joint.
-  joint_WC.set_angular_rate(&plant_context, FLAGS_initial_velocity);
-  // // Initialize joint angles.
-  // // Here we choose the angles so that joint_WA ≈ 75.52°, joint_AB and joint_WC ≈ 104.48°.
-  // const double qA = std::atan2(std::sqrt(15.0), 1.0);
-  // const double qB = M_PI - qA;
-  // const double qC = qB;
-
-  // joint_WA.set_angle(&plant_context, qA);
-  joint_AB.set_angle(&plant_context, qB);
-  joint_WC.set_angle(&plant_context, qC);
-
-  // // Set the initial angular rate for joint_WA.
-  // joint_WA.set_angular_rate(&plant_context, FLAGS_initial_velocity);
+  // driving_joint.set_angle(&plant_context, qA);
   // // Set the initial angular rate for driving_joint.
   // joint_WC.set_angular_rate(&plant_context, FLAGS_initial_velocity);
-
-  //fourbar
-    // const RevoluteJoint<double>& joint_WA = four_bar.GetJointByName<RevoluteJoint>("joint_WA");
-  // const RevoluteJoint<double>& joint_AB = four_bar.GetJointByName<RevoluteJoint>("joint_AB");
-  // const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
-
   // // Initialize joint angles.
   // // Here we choose the angles so that joint_WA ≈ 75.52°, joint_AB and joint_WC ≈ 104.48°.
   // const double qA = std::atan2(std::sqrt(15.0), 1.0);
@@ -164,8 +145,28 @@ int DoMain() {
   // joint_AB.set_angle(&plant_context, qB);
   // joint_WC.set_angle(&plant_context, qC);
 
-  // Set the initial angular rate for joint_WA.
+  // // Set the initial angular rate for joint_WA.
   // joint_WA.set_angular_rate(&plant_context, FLAGS_initial_velocity);
+  // // Set the initial angular rate for driving_joint.
+  // joint_WC.set_angular_rate(&plant_context, FLAGS_initial_velocity);
+
+  //fourbar
+    const RevoluteJoint<double>& joint_WA = four_bar.GetJointByName<RevoluteJoint>("joint_WA");
+  const RevoluteJoint<double>& joint_AB = four_bar.GetJointByName<RevoluteJoint>("joint_AB");
+  const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
+
+  // Initialize joint angles.
+  // Here we choose the angles so that joint_WA ≈ 75.52°, joint_AB and joint_WC ≈ 104.48°.
+  const double qA = std::atan2(std::sqrt(15.0), 1.0);
+  const double qB = M_PI - qA;
+  const double qC = qB;
+
+  joint_WA.set_angle(&plant_context, qA);
+  joint_AB.set_angle(&plant_context, qB);
+  joint_WC.set_angle(&plant_context, qC);
+
+  // Set the initial angular rate for joint_WA.
+  joint_WA.set_angular_rate(&plant_context, FLAGS_initial_velocity);
 
 
 
