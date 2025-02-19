@@ -30,7 +30,7 @@
     </link>
 
     <joint name='humerus_joint' type='revolute'>
-      <pose relative_to='driving_link'>0 0.0 -0.03830 0 1.57 0</pose>
+      <!-- <pose relative_to='driving_link'>0 0.0 -0.03830 0 1.57 0</pose> -->
       <parent>driving_link</parent>
       <child>humerus</child>
       <axis>
@@ -39,8 +39,7 @@
           <effort>0</effort>
         </limit>
         <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0.000</spring_stiffness>
+          <damping>0.0</damping>
         </dynamics>
       </axis>
     </joint>
@@ -129,17 +128,12 @@
       <parent>world</parent>
       <child>radial_world_anchor</child>
       <axis>
-        <xyz>0 1 0</xyz>
+        <xyz expressed_in="__model__">0 1 0</xyz>
         <limit>
           <effort>0</effort>
         </limit>
-        <!-- <limit>
-          <lower>-1.79769e+308</lower>
-          <upper>1.79769e+308</upper>
-        </limit> -->
         <dynamics>
           <damping>0</damping>
-          <spring_stiffness>0.0</spring_stiffness>
         </dynamics>
       </axis>
     </joint>
@@ -149,16 +143,11 @@
       <child>driving_link</child>
       <axis>
         <xyz expressed_in="__model__">0 1 0</xyz>
-        <!-- <limit>
-          <effort>0</effort>
-        </limit> -->
         <limit>
-          <lower>-1.79769e+308</lower>
-          <upper>1.79769e+308</upper>
+          <!-- <effort>0</effort> -->
         </limit>
         <dynamics>
-          <spring_stiffness>0.00000001</spring_stiffness>
-          <damping>0.00000001</damping>
+          <damping>0.0</damping>
         </dynamics>
       </axis>
     </joint>

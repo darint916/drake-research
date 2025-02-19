@@ -44,7 +44,7 @@ DEFINE_double(torque_damping, 1500,
               "Rotational damping (N·m·s/rad) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(applied_torque, 0.0,
               "Constant torque applied at joint_WA.");
-DEFINE_double(initial_velocity, 1.0,
+DEFINE_double(initial_velocity, 0.0,
               "Initial angular rate (radians per second) at joint_WA.");
 
 // Wrap the simulation in a dedicated namespace.
@@ -134,22 +134,22 @@ int DoMain() {
   // joint_WC.set_angular_rate(&plant_context, FLAGS_initial_velocity);
 
   //fourbar
-    const RevoluteJoint<double>& joint_WA = four_bar.GetJointByName<RevoluteJoint>("joint_WA");
-  const RevoluteJoint<double>& joint_AB = four_bar.GetJointByName<RevoluteJoint>("joint_AB");
-  const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
+    // const RevoluteJoint<double>& joint_WA = four_bar.GetJointByName<RevoluteJoint>("joint_WA");
+  // const RevoluteJoint<double>& joint_AB = four_bar.GetJointByName<RevoluteJoint>("joint_AB");
+  // const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
 
-  // Initialize joint angles.
-  // Here we choose the angles so that joint_WA ≈ 75.52°, joint_AB and joint_WC ≈ 104.48°.
-  const double qA = std::atan2(std::sqrt(15.0), 1.0);
-  const double qB = M_PI - qA;
-  const double qC = qB;
+  // // Initialize joint angles.
+  // // Here we choose the angles so that joint_WA ≈ 75.52°, joint_AB and joint_WC ≈ 104.48°.
+  // const double qA = std::atan2(std::sqrt(15.0), 1.0);
+  // const double qB = M_PI - qA;
+  // const double qC = qB;
 
-  joint_WA.set_angle(&plant_context, qA);
-  joint_AB.set_angle(&plant_context, qB);
-  joint_WC.set_angle(&plant_context, qC);
+  // joint_WA.set_angle(&plant_context, qA);
+  // joint_AB.set_angle(&plant_context, qB);
+  // joint_WC.set_angle(&plant_context, qC);
 
   // Set the initial angular rate for joint_WA.
-  joint_WA.set_angular_rate(&plant_context, FLAGS_initial_velocity);
+  // joint_WA.set_angular_rate(&plant_context, FLAGS_initial_velocity);
 
 
 

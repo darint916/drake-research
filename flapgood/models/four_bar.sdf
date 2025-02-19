@@ -229,13 +229,11 @@
       </visual>
     </link>
     <joint name="joint_WA" type="revolute">
-      <child>A</child>
       <parent>world</parent>
+      <child>A</child>
       <axis>
         <xyz expressed_in="__model__">0 1 0</xyz>
         <limit>
-          <!-- No limit provided. sdformat defaults to -1, which we parse as
-               an actuated joint. -->
         </limit>
         <dynamics>
           <damping>0.0</damping>
@@ -248,7 +246,6 @@
       <axis>
         <xyz expressed_in="__model__">0 1 0</xyz>
         <limit>
-          <!-- An effort of 0 is parsed as an unactuated joint. -->
           <effort>0</effort>
         </limit>
         <dynamics>
@@ -257,12 +254,11 @@
       </axis>
     </joint>
     <joint name="joint_WC" type="revolute">
-      <child>C</child>
+      <child>CWorld</child>
       <parent>world</parent>
       <axis>
         <xyz expressed_in="__model__">0 1 0</xyz>
         <limit>
-          <!-- An effort of 0 is parsed as an unactuated joint. -->
           <effort>0</effort>
         </limit>
         <dynamics>
@@ -270,6 +266,9 @@
         </dynamics>
       </axis>
     </joint>
+    <frame name="CWorld" attached_to="C">
+      <pose relative_to="C">0 0 0 0 0 0</pose>
+    </frame>
     <!-- 
       A frame at the end of the B link, down the Bx axis. The frame is
       rotated so that the z of Bc_bushing is aligned with the By axis. This is
