@@ -113,6 +113,7 @@
       axis, and a small translation along the Wy (revolute) axis for visual
       purposes. This link is also called 'Rocker' in the diagram in README.md -->
             <pose>0.5972 0 1.403 0 0 0</pose>
+            <!-- <pose>1.1944 0 2.806 0 0 0</pose> -->
             <inertial>
                 <pose>2.5 0 0 0 0 0</pose>
                 <mass>140</mass>
@@ -154,13 +155,81 @@
                     <diffuse>0 1 0 1</diffuse>
                 </material>
             </visual>
+            <visual name="C_frame_anchor_visual">
+                <!-- Rotation around Cx by 90° = π/2 radians ≈ 1.57079632679 -->
+                <pose relative_to="CWorld">0 0 0 -1.57079632679 0 0</pose>
+                <geometry>
+                    <cylinder>
+                        <radius>0.01</radius>
+                        <length>0.2</length>
+                    </cylinder>
+                </geometry>
+                <material>
+                    <diffuse>1 0 0 1</diffuse>
+                </material>
+            </visual>
         </link>
+
+        <link name="D">
+            <pose>0.5972 0 1.403 0 0 0</pose>
+            <inertial>
+                <pose>2.5 0 0 0 0 0</pose>
+                <mass>140</mass>
+                <inertia>
+                    <ixx>0.08333333333333334</ixx>
+                    <iyy>29.46666666666666</iyy>
+                    <izz>29.416666666666668</izz>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyz>0</iyz>
+                </inertia>
+            </inertial>
+            <visual name="D_visual">
+                <pose>-2.5 0 0 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>5 0.15 0.15</size>
+                    </box>
+                </geometry>
+                <material>
+                    <diffuse>1 1 1 1</diffuse>
+                </material>
+            </visual>
+            <visual name="D_pivot_visual">
+                <pose>0 0 0 1.57079632679 0 0</pose>
+                <geometry>
+                    <cylinder>
+                        <radius>0.01</radius>
+                        <length>0.15</length>
+                    </cylinder>
+                </geometry>
+                <material>
+                    <diffuse>0 1 0 1</diffuse>
+                </material>
+            </visual>
+        </link>
+
+        <joint name="joint_CD" type="fixed">
+            <parent>C</parent>
+            <child>D</child>
+            <axis>
+                <xyz expressed_in="__model__">0 1 0</xyz>
+                <limit>
+                    <effort>0</effort>
+                </limit>
+                <dynamics>
+                    <damping>0.0</damping>
+                </dynamics>
+            </axis>
+        </joint>
+
         <joint name="joint_WA" type="revolute">
             <parent>world</parent>
             <child>A</child>
             <axis>
                 <xyz expressed_in="__model__">0 1 0</xyz>
                 <limit>
+                    <!-- <effort>0</effort> -->
                 </limit>
                 <dynamics>
                     <damping>0.0</damping>
@@ -194,8 +263,8 @@
             </axis>
         </joint>
         <frame name="CWorld" attached_to="C">
-            <pose relative_to="C">0 0 0 0 0 0</pose>
-
+            <pose relative_to="C">0.1 0 0 0 0 0</pose>
+            <!-- <pose relative_to="A">0.5972 0 1.403 0 0 0</pose> -->
         </frame>
         <!-- 
       A frame at the end of the B link, down the Bx axis. The frame is
