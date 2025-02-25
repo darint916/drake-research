@@ -6,7 +6,7 @@
       link is also called 'Crank' in the diagram in README.md -->
             <inertial>
                 <!-- Acm (A's center of mass) is located at the midpoint of the 4 meter long link. -->
-                <pose>2 0 0 0 0 0</pose>
+                <pose>1 0 0 0 0 0</pose>
                 <mass>144</mass>
                 <inertia>
                     <!-- Inertia tensor for a solid cuboid of dimensions
@@ -21,10 +21,10 @@
             </inertial>
             <!-- A skinny red box along the Ax axis -->
             <visual name="A_visual">
-                <pose>1.915 0 0 0 0 0</pose>
+                <pose>1 0 0 0 0 0</pose>
                 <geometry>
                     <box>
-                        <size>4 0.15 0.15</size>
+                        <size>2 0.15 0.15</size>
                     </box>
                 </geometry>
                 <material>
@@ -51,7 +51,7 @@
             <!-- The frame B measured in A, X_AB, is a translation along the Ax
       axis, and a small translation along the Ay (revolute) axis for visual
       purposes. This link is also called 'Coupler' in the diagram in README.md -->
-            <pose relative_to="A">3.830 0 0 0 0 0</pose>
+            <pose relative_to="A">2 0 0 0 0 0</pose>
             <inertial>
                 <!-- Bcm (B's center of mass) is located at the midpoint of the 4 meter long link. -->
                 <pose>1.9 0 0 0 0 0</pose>
@@ -107,12 +107,23 @@
                     <diffuse>0 0 1 1</diffuse>
                 </material>
             </visual>
+            <visual name="B_frame_anchor_visual">
+                <pose relative_to="Bf_bushing">0 0 0 0 0 0</pose>
+                <geometry>
+                    <cylinder>
+                        <radius>0.01</radius>
+                        <length>0.2</length>
+                    </cylinder>
+                </geometry>
+                <material>
+                    <diffuse>1 0 0 1</diffuse>
+                </material>
+            </visual>
         </link>
+
         <link name="C">
-            <!-- The frame C measured in W, X_WC, is a translation along the Wx
-      axis, and a small translation along the Wy (revolute) axis for visual
-      purposes. This link is also called 'Rocker' in the diagram in README.md -->
-            <pose>0.5972 0 1.403 0 0 0</pose>
+            <!-- <pose>0.5972 0 1.403 0 0 0</pose> -->
+            <pose>1.5972 0 3.403 0 0 0</pose>
             <!-- <pose>1.1944 0 2.806 0 0 0</pose> -->
             <inertial>
                 <pose>2.5 0 0 0 0 0</pose>
@@ -155,25 +166,12 @@
                     <diffuse>0 1 0 1</diffuse>
                 </material>
             </visual>
-            <visual name="C_frame_anchor_visual">
-                <!-- Rotation around Cx by 90° = π/2 radians ≈ 1.57079632679 -->
-                <pose relative_to="CWorld">0 0 0 -1.57079632679 0 0</pose>
-                <geometry>
-                    <cylinder>
-                        <radius>0.01</radius>
-                        <length>0.2</length>
-                    </cylinder>
-                </geometry>
-                <material>
-                    <diffuse>1 0 0 1</diffuse>
-                </material>
-            </visual>
         </link>
 
         <link name="D">
-            <pose>0.5972 0 1.403 0 0 0</pose>
+            <pose relative_to="C">0 0 0 0 0 0</pose>
             <inertial>
-                <pose>2.5 0 0 0 0 0</pose>
+                <pose>-2.5 0 0 0 0 0</pose>
                 <mass>140</mass>
                 <inertia>
                     <ixx>0.08333333333333334</ixx>
@@ -192,7 +190,7 @@
                     </box>
                 </geometry>
                 <material>
-                    <diffuse>1 1 1 1</diffuse>
+                    <diffuse>1 .5 1 1</diffuse>
                 </material>
             </visual>
             <visual name="D_pivot_visual">
@@ -208,6 +206,125 @@
                 </material>
             </visual>
         </link>
+
+
+        <link name="E">
+            <pose relative_to="D">-5 0 0 0 1.57079632679 0</pose>
+            <inertial>
+                <pose>-1 0 0 0 0 0</pose>
+                <mass>140</mass>
+                <inertia>
+                    <ixx>0.08333333333333334</ixx>
+                    <iyy>29.46666666666666</iyy>
+                    <izz>29.416666666666668</izz>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyz>0</iyz>
+                </inertia>
+            </inertial>
+            <visual name="E_visual">
+                <pose>-1 0 0 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>2 0.15 0.15</size>
+                    </box>
+                </geometry>
+                <material>
+                    <diffuse>1 1 1 1</diffuse>
+                </material>
+            </visual>
+            <visual name="E_pivot_visual">
+                <pose>0 0 0 1.57079632679 0 0</pose>
+                <geometry>
+                    <cylinder>
+                        <radius>0.01</radius>
+                        <length>0.15</length>
+                    </cylinder>
+                </geometry>
+                <material>
+                    <diffuse>0 1 0 1</diffuse>
+                </material>
+            </visual>
+        </link>
+
+        <link name="F">
+            <pose relative_to="E">-2 0 0 0 1.57079632679 0</pose>
+            <inertial>
+                <pose>-5 0 0 0 0 0</pose>
+                <mass>140</mass>
+                <inertia>
+                    <ixx>0.08333333333333334</ixx>
+                    <iyy>29.46666666666666</iyy>
+                    <izz>29.416666666666668</izz>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyz>0</iyz>
+                </inertia>
+            </inertial>
+            <visual name="F_visual">
+                <pose>-5 0 0 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>10 0.15 0.15</size>
+                    </box>
+                </geometry>
+                <material>
+                    <diffuse>0 1 1 1</diffuse>
+                </material>
+            </visual>
+            <visual name="F_pivot_visual">
+                <pose>0 0 0 1.57079632679 0 0</pose>
+                <geometry>
+                    <cylinder>
+                        <radius>0.01</radius>
+                        <length>0.15</length>
+                    </cylinder>
+                </geometry>
+                <material>
+                    <diffuse>0 1 0 1</diffuse>
+                </material>
+            </visual>
+            <visual name="F_frame_anchor_visual">
+                <pose relative_to="Fb_bushing">0 0 0 0 0 0</pose>
+                <geometry>
+                    <cylinder>
+                        <radius>0.01</radius>
+                        <length>0.2</length>
+                    </cylinder>
+                </geometry>
+                <material>
+                    <diffuse>1 0 0 1</diffuse>
+                </material>
+            </visual>
+        </link>
+
+        <joint name="joint_EF" type="revolute">
+            <parent>E</parent>
+            <child>F</child>
+            <axis>
+                <xyz expressed_in="__model__">0 1 0</xyz>
+                <limit>
+                    <effort>0</effort>
+                </limit>
+                <dynamics>
+                    <damping>0.0</damping>
+                </dynamics>
+            </axis>
+        </joint>
+
+        <joint name="joint_DE" type="revolute">
+            <parent>D</parent>
+            <child>E</child>
+            <axis>
+                <xyz expressed_in="__model__">0 1 0</xyz>
+                <limit>
+                    <effort>0</effort>
+                </limit>
+                <dynamics>
+                    <damping>0.0</damping>
+                </dynamics>
+            </axis>
+        </joint>
 
         <joint name="joint_CD" type="fixed">
             <parent>C</parent>
@@ -251,7 +368,7 @@
         </joint>
         <joint name="joint_WC" type="revolute">
             <parent>world</parent>
-            <child>CWorld</child>
+            <child>C</child>
             <axis>
                 <xyz expressed_in="__model__">0 1 0</xyz>
                 <limit>
@@ -262,30 +379,20 @@
                 </dynamics>
             </axis>
         </joint>
-        <frame name="CWorld" attached_to="C">
-            <pose relative_to="C">0.1 0 0 0 0 0</pose>
-            <!-- <pose relative_to="A">0.5972 0 1.403 0 0 0</pose> -->
+
+        <frame name="Bf_bushing" attached_to="B">
+            <pose relative_to="B">2 0 0 -1.57079632679 0 0</pose>
         </frame>
-        <!-- 
-      A frame at the end of the B link, down the Bx axis. The frame is
-      rotated so that the z of Bc_bushing is aligned with the By axis. This is
-      done so the LinearBushingRollPitchYaw ForceElement freely rotates around
-      its z axis (Yaw) to avoid gimbal lock on the y axis (Pitch).
-    -->
+
+        <frame name="Fb_bushing" attached_to="F">
+            <pose relative_to="F">-10 0 0 -1.57079632679 0 0</pose>
+        </frame>
+
         <frame name="Bc_bushing" attached_to="B">
-            <!-- This frame is rotated relative from link B, around Bx, by -90° = -π/2 radians ≈
-            -1.57079632679 -->
             <pose relative_to="B">4 0 0 -1.57079632679 0 0</pose>
         </frame>
-        <!-- 
-      A frame at the end of the C link, down the Cx axis. The frame is
-      rotated so that the z of Cb_bushing is aligned with the Cy axis. This is
-      done so the LinearBushingRollPitchYaw ForceElement freely rotates around
-      its z axis (Yaw) to avoid gimbal lock on the y axis (Pitch).
-    -->
+
         <frame name="Cb_bushing" attached_to="C">
-            <!-- This frame is rotated relative from link C, around Cx, by -90° = -π/2 radians ≈
-            -1.57079632679 -->
             <pose relative_to="C">5 0 0 -1.57079632679 0 0</pose>
         </frame>
     </model>
