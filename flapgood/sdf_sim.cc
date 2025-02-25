@@ -21,6 +21,8 @@
 
 #include "drake/systems/framework/diagram_builder.h"
 #include "drake/visualization/visualization_config_functions.h"
+#include <drake/systems/analysis/runge_kutta2_integrator.h>
+#include <drake/systems/analysis/implicit_euler_integrator.h>
 
 // Use the appropriate Drake namespaces.
 using drake::geometry::SceneGraph;
@@ -33,13 +35,13 @@ using drake::systems::Simulator;
 using Eigen::Vector3d;
 
 // Define gflags parameters (these could be overridden on the command-line).
-DEFINE_double(simulation_time, 10.0, "Duration of the simulation in seconds.");
+DEFINE_double(simulation_time, 15.0, "Duration of the simulation in seconds.");
 DEFINE_double(force_stiffness, 30000, "Translational stiffness (N/m) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(force_damping, 1500, "Translational damping (N·s/m) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(torque_stiffness, 30000,
               "Rotational stiffness (N·m/rad) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(torque_damping, 1500, "Rotational damping (N·m·s/rad) for the LinearBushingRollPitchYaw force element.");
-DEFINE_double(applied_torque, 30000, "Constant torque applied at joint_WA.");
+DEFINE_double(applied_torque, 10000, "Constant torque applied at joint_WA.");
 DEFINE_double(initial_velocity, 0, "Initial angular rate (radians per second) at joint_WA.");
 
 // Wrap the simulation in a dedicated namespace.
@@ -64,7 +66,7 @@ int DoMain()
 
     // Create a MultibodyPlant with zero time step and a SceneGraph.
     auto [four_bar, scene_graph] =
-        drake::multibody::AddMultibodyPlantSceneGraph(&builder, std::make_unique<MultibodyPlant<double>>(1e-4));
+        drake::multibody::AddMultibodyPlantSceneGraph(&builder, std::make_unique<MultibodyPlant<double>>(0));
 
     // Load the four-bar model from its SDF file.
     // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/wing_asm_simple.sdf";
@@ -74,6 +76,10 @@ int DoMain()
     // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_bar_wield.sdf";
     Parser parser(&four_bar);
     parser.AddModels(sdf_url);
+
+	auto meshcat = std::make_shared<drake::geometry::Meshcat>(7001);
+	auto& meshcat_visualizer = drake::geometry::MeshcatVisualizer<double>::AddToBuilder(&builder, scene_graph, meshcat, drake::geometry::MeshcatVisualizerParams());
+
 
     // Retrieve the two frames for the bushing.
     // const auto& frame_Hr = four_bar.GetFrameByName("humerus_radial_bushing");
@@ -178,14 +184,17 @@ int DoMain()
     auto start_time = std::chrono::high_resolution_clock::now();
     std::cout << "Starting simulation at time: " << start_time.time_since_epoch().count() << std::endl;
 
-    // Create and run the simulator.
+	
+    
+	// Create and run the simulator.
     Simulator<double> simulator(*diagram, std::move(diagram_context));
-    simulator.set_target_realtime_rate(1.0);
+    simulator.set_target_realtime_rate(0.3);
+	simulator.reset_integrator<drake::systems::RungeKutta2Integrator<double>>(1e-4);
+	// simulator.reset_integrator<drake::systems::ImplicitEulerIntegrator<double>>(  *diagram, &simulator.get_mutable_context(), 1e-4);
+    meshcat_visualizer.StartRecording();
+	simulator.Initialize();
     simulator.AdvanceTo(FLAGS_simulation_time);
-
-    // meshcat
-    auto& meshcat = drake::geometry::Meshcat(&builder);
-    meshcat.StartRecording();
+    // meshcat    
 
     // Print simulation statistics.
     drake::systems::PrintSimulatorStatistics(simulator);
@@ -193,8 +202,8 @@ int DoMain()
     // Optionally, print the simulation end time.
     auto end_time = std::chrono::high_resolution_clock::now();
     std::cout << "Simulation ended at time: " << end_time.time_since_epoch().count() << std::endl;
-    meshcat.StopRecording();
-    meshcat.PublishRecording();
+ 
+    meshcat_visualizer.PublishRecording();
     // (Optionally, keep the process alive so that the Meshcat visualization remains open.)
     while (true)
     {
