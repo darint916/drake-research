@@ -1,10 +1,10 @@
 // Entrypoint for the four-bar linkage simulation demo.
 #include <chrono>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <gflags/gflags.h>
 #include <yaml-cpp/yaml.h>
-#include <fstream>
 
 #include "drake/geometry/meshcat.h"
 #include "drake/geometry/meshcat_visualizer.h"
@@ -20,10 +20,11 @@
 #include "drake/systems/analysis/simulator_gflags.h"
 #include "drake/systems/analysis/simulator_print_stats.h"
 
+#include <drake/systems/analysis/implicit_euler_integrator.h>
+#include <drake/systems/analysis/runge_kutta2_integrator.h>
+#include <drake/systems/primitives/vector_log_sink.h>
 #include "drake/systems/framework/diagram_builder.h"
 #include "drake/visualization/visualization_config_functions.h"
-#include <drake/systems/analysis/runge_kutta2_integrator.h>
-#include <drake/systems/analysis/implicit_euler_integrator.h>
 
 // Use the appropriate Drake namespaces.
 using drake::geometry::SceneGraph;
@@ -37,7 +38,8 @@ using Eigen::Vector3d;
 
 // Define gflags parameters (these could be overridden on the command-line).
 DEFINE_double(simulation_time, 15.0, "Duration of the simulation in seconds.");
-DEFINE_double(force_stiffness, 30000000, "Translational stiffness (N/m) for the LinearBushingRollPitchYaw force element.");
+DEFINE_double(force_stiffness, 30000000,
+              "Translational stiffness (N/m) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(force_damping, 15000, "Translational damping (N·s/m) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(torque_stiffness, 30000000,
               "Rotational stiffness (N·m/rad) for the LinearBushingRollPitchYaw force element.");
@@ -78,9 +80,9 @@ int DoMain()
     Parser parser(&four_bar);
     parser.AddModels(sdf_url);
 
-	auto meshcat = std::make_shared<drake::geometry::Meshcat>(7001);
-	auto& meshcat_visualizer = drake::geometry::MeshcatVisualizer<double>::AddToBuilder(&builder, scene_graph, meshcat, drake::geometry::MeshcatVisualizerParams());
-
+    auto meshcat = std::make_shared<drake::geometry::Meshcat>(7001);
+    auto& meshcat_visualizer = drake::geometry::MeshcatVisualizer<double>::AddToBuilder(
+        &builder, scene_graph, meshcat, drake::geometry::MeshcatVisualizerParams());
 
     // Retrieve the two frames for the bushing.
     // const auto& frame_Hr = four_bar.GetFrameByName("humerus_radial_bushing");
@@ -97,7 +99,7 @@ int DoMain()
     const double k_rpy = FLAGS_torque_stiffness;
     const double d_rpy = FLAGS_torque_damping;
 
-	// const double k_xyz = 1e8;
+    // const double k_xyz = 1e8;
     // const double d_xyz = 1e6;
     // const double k_rpy = 1e5;
     // const double d_rpy = 1e5;
@@ -120,6 +122,18 @@ int DoMain()
 
     // Finalize the MultibodyPlant.
     four_bar.Finalize();
+
+    // requires plant finalization, we get data
+    const auto& state_output = four_bar.get_state_output_port();
+    auto state_logger = drake::systems::LogVectorOutput(state_output, &builder);
+    state_logger->set_name("state_logger");
+    
+    const auto& world_poses_output = four_bar.get_body_poses_output_port();
+    auto world_pos_logger = drake::systems::LogVectorOutput(world_poses_output, &builder);
+
+    const auto& world_velocities_output = four_bar.get_body_spatial_velocities_output_port();
+    const BodyIndex wing_body_index = four_bar.GetBodyByName("G").index();
+    auto world_vel_logger = drake::systems::LogVectorOutput(world_velocities_output, &builder);
 
     // Add default visualization (which sets up Meshcat if available).
     drake::visualization::AddDefaultVisualization(&builder);
@@ -190,17 +204,16 @@ int DoMain()
     auto start_time = std::chrono::high_resolution_clock::now();
     std::cout << "Starting simulation at time: " << start_time.time_since_epoch().count() << std::endl;
 
-	
-    
-	// Create and run the simulator.
+    // Create and run the simulator.
     Simulator<double> simulator(*diagram, std::move(diagram_context));
-    simulator.set_target_realtime_rate(0.3);
-	simulator.reset_integrator<drake::systems::RungeKutta2Integrator<double>>(1e-4);
-	// simulator.reset_integrator<drake::systems::ImplicitEulerIntegrator<double>>(  *diagram, &simulator.get_mutable_context(), 1e-4);
+    simulator.set_target_realtime_rate(1);
+    simulator.reset_integrator<drake::systems::RungeKutta2Integrator<double>>(1e-4);
+    // simulator.reset_integrator<drake::systems::ImplicitEulerIntegrator<double>>(  *diagram,
+    // &simulator.get_mutable_context(), 1e-4);
     meshcat_visualizer.StartRecording();
-	simulator.Initialize();
+    simulator.Initialize();
     simulator.AdvanceTo(FLAGS_simulation_time);
-    // meshcat    
+    // meshcat
 
     // Print simulation statistics.
     drake::systems::PrintSimulatorStatistics(simulator);
@@ -208,8 +221,107 @@ int DoMain()
     // Optionally, print the simulation end time.
     auto end_time = std::chrono::high_resolution_clock::now();
     std::cout << "Simulation ended at time: " << end_time.time_since_epoch().count() << std::endl;
- 
+
     meshcat_visualizer.PublishRecording();
+
+    // logger plot of states
+    const auto sim_context = simulator.get_context();
+    // const auto& state_logs = state_logger->FindLog(sim_context);
+    // std::ofstream file("/home/darin/Github/drake/flapgood/four_bar.csv");
+    // // Check the number of states and samples
+    // const int num_states = state_logs.data().rows();  // Number of state variables (e.g., joint positions, velocities)
+    // const int num_samples = state_logs.num_samples(); // Number of logged timesteps
+
+    // // Print the dimensions of the log
+    // std::cout << "Logged " << num_samples << " samples with " << num_states << " state variables each." << std::endl;
+
+    // // Write header
+    // file << "time";
+    // file << "\n";
+
+    // // Loop through and write data
+    // for (int i = 0; i < num_samples; ++i)
+    // {
+    //     file << state_logs.sample_times()(i); // Time at sample i
+    //     for (int j = 0; j < num_states; ++j)
+    //     {
+    //         file << ", " << state_logs.data()(j, i); // State value at (row j, col i)
+    //     }
+    //     file << "\n";
+    // }
+
+    // // Close the file
+    // file.close();
+    // std::cout << "Log written to four_bar.csv" << std::endl;
+    // std::cout << "Number of generalized positions: " << four_bar.num_positions() << std::endl;
+    // std::cout << "Number of generalized velocities: " << four_bar.num_velocities() << std::endl;
+    // std::cout << "Total state variables: " << four_bar.num_multibody_states() << std::endl;
+    // std::vector<std::string> velocity_names = four_bar.GetVelocityNames();
+    // std::vector<std::string> position_names = four_bar.GetPositionNames();
+    // std::cout << "Velocity Names:\n";
+    // for (const std::string& name : velocity_names)
+    // {
+    //     std::cout << name << std::endl;
+    // }
+    // std::cout << "Position Names:\n";
+    // for (const std::string& name : position_names)
+    // {
+    //     std::cout << name << std::endl;
+    // }
+
+    // logger plot of world velocities
+    const auto& world_pos_logs = world_pos_logger->FindLog(sim_context);
+    std::ofstream file("/home/darin/Github/drake/flapgood/four_bar_pos.csv");
+    // Check the number of states and samples
+    const int num_states = world_pos_logs.data().rows();  // Number of state variables (e.g., joint positions, velocities)
+    const int num_samples = world_pos_logs.num_samples(); // Number of logged timesteps
+    std::cout << "Wing body index: " << wing_body_index << std::endl;
+    // Print the dimensions of the log
+    std::cout << "Logged " << num_samples << " samples with " << num_states << " pose variables each." << std::endl;
+
+    // Write header
+    file << "time";
+    for (int j = 0; j < num_states; ++j)
+    {
+        
+    }
+    file << "\n";
+
+    // Loop through and write data
+    for (int i = 0; i < num_samples; ++i)
+    {
+        file << state_logs.sample_times()(i); // Time at sample i
+        for (int j = 0; j < num_states; ++j)
+        {
+            file << ", " << state_logs.data()(j, i); // State value at (row j, col i)
+        }
+        file << "\n";
+    }
+
+    // Close the file
+    file.close();
+    std::cout << "Log written to four_bar.csv" << std::endl;
+    std::cout << "Number of generalized positions: " << four_bar.num_positions() << std::endl;
+    std::cout << "Number of generalized velocities: " << four_bar.num_velocities() << std::endl;
+    std::cout << "Total state variables: " << four_bar.num_multibody_states() << std::endl;
+    std::vector<std::string> velocity_names = four_bar.GetVelocityNames();
+    std::vector<std::string> position_names = four_bar.GetPositionNames();
+    std::cout << "Velocity Names:\n";
+    for (const std::string& name : velocity_names)
+    {
+        std::cout << name << std::endl;
+    }
+    std::cout << "Position Names:\n";
+    for (const std::string& name : position_names)
+    {
+        std::cout << name << std::endl;
+    }
+
+    // logger plot of world velocities
+    const auto& state_logs = state_logger->FindLog(simulator.get_context());
+    std::ofstream file("/home/darin/Github/drake/flapgood/four_bar.csv");
+
+
     // (Optionally, keep the process alive so that the Meshcat visualization remains open.)
     while (true)
     {
