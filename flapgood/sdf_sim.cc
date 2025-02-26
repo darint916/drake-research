@@ -4,6 +4,7 @@
 #include <iostream>
 #include <gflags/gflags.h>
 #include <yaml-cpp/yaml.h>
+#include <fstream>
 
 #include "drake/geometry/meshcat.h"
 #include "drake/geometry/meshcat_visualizer.h"
@@ -36,12 +37,12 @@ using Eigen::Vector3d;
 
 // Define gflags parameters (these could be overridden on the command-line).
 DEFINE_double(simulation_time, 15.0, "Duration of the simulation in seconds.");
-DEFINE_double(force_stiffness, 30000, "Translational stiffness (N/m) for the LinearBushingRollPitchYaw force element.");
-DEFINE_double(force_damping, 1500, "Translational damping (N·s/m) for the LinearBushingRollPitchYaw force element.");
-DEFINE_double(torque_stiffness, 30000,
+DEFINE_double(force_stiffness, 30000000, "Translational stiffness (N/m) for the LinearBushingRollPitchYaw force element.");
+DEFINE_double(force_damping, 15000, "Translational damping (N·s/m) for the LinearBushingRollPitchYaw force element.");
+DEFINE_double(torque_stiffness, 30000000,
               "Rotational stiffness (N·m/rad) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(torque_damping, 1500, "Rotational damping (N·m·s/rad) for the LinearBushingRollPitchYaw force element.");
-DEFINE_double(applied_torque, 10000, "Constant torque applied at joint_WA.");
+DEFINE_double(applied_torque, -10000, "Constant torque applied at joint_WA.");
 DEFINE_double(initial_velocity, 0, "Initial angular rate (radians per second) at joint_WA.");
 
 // Wrap the simulation in a dedicated namespace.
@@ -95,6 +96,11 @@ int DoMain()
     const double d_xyz = FLAGS_force_damping;
     const double k_rpy = FLAGS_torque_stiffness;
     const double d_rpy = FLAGS_torque_damping;
+
+	// const double k_xyz = 1e8;
+    // const double d_xyz = 1e6;
+    // const double k_rpy = 1e5;
+    // const double d_rpy = 1e5;
 
     // For this demo we assume that only a revolute (z-axis) degree-of-freedom is active.
     // Thus, we choose nonzero stiffness/damping only for the first two rotational axes.
