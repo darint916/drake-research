@@ -127,9 +127,9 @@ int DoMain()
     const auto& state_output = four_bar.get_state_output_port();
     auto state_logger = drake::systems::LogVectorOutput(state_output, &builder);
     state_logger->set_name("state_logger");
-    
-    const auto& world_poses_output = four_bar.get_body_poses_output_port();
-    auto world_pos_logger = drake::systems::LogVectorOutput(world_poses_output, &builder);
+
+    // const auto& world_poses_output = four_bar.get_body_poses_output_port();
+    // auto world_pos_logger = drake::systems::LogVectorOutput(world_poses_output, &builder);
 
     const auto& world_velocities_output = four_bar.get_body_spatial_velocities_output_port();
     const BodyIndex wing_body_index = four_bar.GetBodyByName("G").index();
@@ -225,12 +225,12 @@ int DoMain()
     meshcat_visualizer.PublishRecording();
 
     // logger plot of states
-    const auto sim_context = simulator.get_context();
+    // const auto sim_context = simulator.get_context();
     // const auto& state_logs = state_logger->FindLog(sim_context);
     // std::ofstream file("/home/darin/Github/drake/flapgood/four_bar.csv");
     // // Check the number of states and samples
-    // const int num_states = state_logs.data().rows();  // Number of state variables (e.g., joint positions, velocities)
-    // const int num_samples = state_logs.num_samples(); // Number of logged timesteps
+    // const int num_states = state_logs.data().rows();  // Number of state variables (e.g., joint positions,
+    // velocities) const int num_samples = state_logs.num_samples(); // Number of logged timesteps
 
     // // Print the dimensions of the log
     // std::cout << "Logged " << num_samples << " samples with " << num_states << " state variables each." << std::endl;
@@ -270,57 +270,35 @@ int DoMain()
     // }
 
     // logger plot of world velocities
-    const auto& world_pos_logs = world_pos_logger->FindLog(sim_context);
-    std::ofstream file("/home/darin/Github/drake/flapgood/four_bar_pos.csv");
+    const auto& world_vel_logs = world_vel_logger->FindLog(simulator.get_context());
+    std::ofstream file("/home/darin/Github/drake/flapgood/four_bar_vel_end.csv");
     // Check the number of states and samples
-    const int num_states = world_pos_logs.data().rows();  // Number of state variables (e.g., joint positions, velocities)
-    const int num_samples = world_pos_logs.num_samples(); // Number of logged timesteps
+    const int num_states = world_vel_logs.data().rows(); // Number of state variables (e.g., joint positions, velocities)
+    const int num_samples = world_vel_logs.num_samples(); // Number of logged timesteps
     std::cout << "Wing body index: " << wing_body_index << std::endl;
     // Print the dimensions of the log
     std::cout << "Logged " << num_samples << " samples with " << num_states << " pose variables each." << std::endl;
-
+    four_bar.GetVelocityNames();
     // Write header
-    file << "time";
-    for (int j = 0; j < num_states; ++j)
-    {
-        
-    }
-    file << "\n";
+    file << "time, vx, vy, vz, wx, wy, wz\n";
 
-    // Loop through and write data
-    for (int i = 0; i < num_samples; ++i)
+    int start_index = 6 * wing_body_index;
+    for (int i = 0; i < world_vel_logs.num_samples(); i++)
     {
-        file << state_logs.sample_times()(i); // Time at sample i
-        for (int j = 0; j < num_states; ++j)
-        {
-            file << ", " << state_logs.data()(j, i); // State value at (row j, col i)
-        }
+        double time = world_vel_logs.sample_times()(i);
+        file << time;
+        Eigen::Vector3d linear_velocity = world_vel_logs.data().col(i).segment<3>(start_index);
+        Eigen::Vector3d angular_velocity = world_vel_logs.data().col(i).segment<3>(start_index + 3);
+
+        file << ", " << linear_velocity.x() << ", " << linear_velocity.y() << ", " << linear_velocity.z();
+        file << ", " << angular_velocity.x() << ", " << angular_velocity.y() << ", " << angular_velocity.z();
         file << "\n";
+        
     }
 
     // Close the file
     file.close();
-    std::cout << "Log written to four_bar.csv" << std::endl;
-    std::cout << "Number of generalized positions: " << four_bar.num_positions() << std::endl;
-    std::cout << "Number of generalized velocities: " << four_bar.num_velocities() << std::endl;
-    std::cout << "Total state variables: " << four_bar.num_multibody_states() << std::endl;
-    std::vector<std::string> velocity_names = four_bar.GetVelocityNames();
-    std::vector<std::string> position_names = four_bar.GetPositionNames();
-    std::cout << "Velocity Names:\n";
-    for (const std::string& name : velocity_names)
-    {
-        std::cout << name << std::endl;
-    }
-    std::cout << "Position Names:\n";
-    for (const std::string& name : position_names)
-    {
-        std::cout << name << std::endl;
-    }
-
-    // logger plot of world velocities
-    const auto& state_logs = state_logger->FindLog(simulator.get_context());
-    std::ofstream file("/home/darin/Github/drake/flapgood/four_bar.csv");
-
+    std::cout << "Log written to four_bar_vel.csv" << std::endl;
 
     // (Optionally, keep the process alive so that the Meshcat visualization remains open.)
     while (true)
