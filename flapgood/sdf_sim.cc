@@ -24,6 +24,7 @@
 #include <drake/systems/analysis/runge_kutta2_integrator.h>
 #include <drake/systems/primitives/vector_log_sink.h>
 #include "drake/systems/framework/diagram_builder.h"
+#include "drake/systems/framework/leaf_system.h"
 #include "drake/visualization/visualization_config_functions.h"
 
 // Use the appropriate Drake namespaces.
@@ -56,6 +57,41 @@ namespace four_bar
 {
 namespace
 {
+
+class BodySpatialVelocitiesToVector : public drake::systems::LeafSystem<double>
+{
+  public:
+    // In a real implementation, pass the number of bodies as a parameter.
+    BodySpatialVelocitiesToVector(int num_bodies) : num_bodies_(num_bodies)
+    {
+        this->DeclareAbstractInputPort("body_spatial_velocities",
+                                       drake::Value<std::vector<drake::multibody::SpatialVelocity<double>>>());
+        // Each body contributes 6 numbers (3 translational + 3 rotational).
+        this->DeclareVectorOutputPort("body_spatial_velocities_to_vector", 6 * num_bodies,
+                                      &BodySpatialVelocitiesToVector::OutputVector);
+    }
+
+  private:
+    int num_bodies_;
+
+    void OutputVector(const drake::systems::Context<double>& context, drake::systems::BasicVector<double>* output) const
+    {
+        const auto& abstract_val = this->EvalAbstractInput(context, 0);
+        const auto& spatial_velocities =
+            abstract_val->get_value<std::vector<drake::multibody::SpatialVelocity<double>>>();
+
+        // For safety, you might want to check that spatial_velocities.size() == num_bodies_
+        Eigen::VectorXd vec(6 * num_bodies_);
+        for (int i = 0; i < num_bodies_; ++i)
+        {
+            // Extract the translational (first 3) and rotational (next 3) components.
+            vec.segment<3>(6 * i) = spatial_velocities[i].translational();
+            vec.segment<3>(6 * i + 3) = spatial_velocities[i].rotational();
+        }
+        output->set_value(vec);
+    }
+
+}; // namespace
 
 int DoMain()
 {
@@ -131,7 +167,12 @@ int DoMain()
     // const auto& world_poses_output = four_bar.get_body_poses_output_port();
     // auto world_pos_logger = drake::systems::LogVectorOutput(world_poses_output, &builder);
 
-    const auto& world_velocities_output = four_bar.get_body_spatial_velocities_output_port();
+    const auto& abstract_world_velocities_output = four_bar.get_body_spatial_velocities_output_port();
+    int num_bodies = four_bar.num_bodies();
+    auto converter = builder.AddSystem<BodySpatialVelocitiesToVector>(num_bodies);
+    builder.Connect(abstract_world_velocities_output, converter->get_input_port());
+
+    const auto& world_velocities_output = converter->get_output_port();
     const BodyIndex wing_body_index = four_bar.GetBodyByName("G").index();
     auto world_vel_logger = drake::systems::LogVectorOutput(world_velocities_output, &builder);
 
@@ -189,10 +230,12 @@ int DoMain()
 
     // Initialize joint angles.
     // Here we choose the angles so that joint_WA ≈ 75.52°, joint_AB and joint_WC ≈ 104.48°.
-    const double qA = std::atan2(std::sqrt(15.0), 1.0);
-    const double qB = M_PI - qA;
-    const double qC = qB;
-
+    // const double qA = std::atan2(std::sqrt(15.0), 1.0);
+    // const double qB = M_PI - qA;
+    // const double qC = qB;
+    const double qA = 0;
+    const double qB = 0;
+    const double qC = 0;
     joint_WA.set_angle(&plant_context, qA);
     joint_AB.set_angle(&plant_context, qB);
     joint_WC.set_angle(&plant_context, qC);
@@ -273,7 +316,8 @@ int DoMain()
     const auto& world_vel_logs = world_vel_logger->FindLog(simulator.get_context());
     std::ofstream file("/home/darin/Github/drake/flapgood/four_bar_vel_end.csv");
     // Check the number of states and samples
-    const int num_states = world_vel_logs.data().rows(); // Number of state variables (e.g., joint positions, velocities)
+    const int num_states =
+        world_vel_logs.data().rows(); // Number of state variables (e.g., joint positions, velocities)
     const int num_samples = world_vel_logs.num_samples(); // Number of logged timesteps
     std::cout << "Wing body index: " << wing_body_index << std::endl;
     // Print the dimensions of the log
@@ -293,12 +337,37 @@ int DoMain()
         file << ", " << linear_velocity.x() << ", " << linear_velocity.y() << ", " << linear_velocity.z();
         file << ", " << angular_velocity.x() << ", " << angular_velocity.y() << ", " << angular_velocity.z();
         file << "\n";
-        
     }
 
     // Close the file
     file.close();
     std::cout << "Log written to four_bar_vel.csv" << std::endl;
+    //--------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------
+    //wingtip vel
+    std::ofstream file_tip("/home/darin/Github/drake/flapgood/four_bar_vel_tip.csv");
+    // Write header
+    file_tip << "time, vx, vy, vz, wx, wy, wz\n";
+    const BodyIndex wing_tip_index = four_bar.GetBodyByName("H").index();
+    std::cout << "Wing body index: " << wing_tip_index << std::endl;
+
+    start_index = 6 * wing_tip_index;
+    for (int i = 0; i < world_vel_logs.num_samples(); i++)
+    {
+        double time = world_vel_logs.sample_times()(i);
+        file_tip << time;
+        Eigen::Vector3d linear_velocity = world_vel_logs.data().col(i).segment<3>(start_index);
+        Eigen::Vector3d angular_velocity = world_vel_logs.data().col(i).segment<3>(start_index + 3);
+
+        file_tip << ", " << linear_velocity.x() << ", " << linear_velocity.y() << ", " << linear_velocity.z();
+        file_tip << ", " << angular_velocity.x() << ", " << angular_velocity.y() << ", " << angular_velocity.z();
+        file_tip << "\n";
+    }
+
+    // Close the file_tip
+    file_tip.close();
+    std::cout << "Log written to four_bar_vel_tip.csv" << std::endl;
+
 
     // (Optionally, keep the process alive so that the Meshcat visualization remains open.)
     while (true)

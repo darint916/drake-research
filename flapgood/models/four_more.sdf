@@ -2,15 +2,10 @@
 <sdf version="1.7">
     <model name="four_bar">
         <link name="A">
-            <!-- The frame A measured in the world frame, X_WA is the identity. This 
-      link is also called 'Crank' in the diagram in README.md -->
             <inertial>
-                <!-- Acm (A's center of mass) is located at the midpoint of the 4 meter long link. -->
                 <pose>1 0 0 0 0 0</pose>
                 <mass>144</mass>
                 <inertia>
-                    <!-- Inertia tensor for a solid cuboid of dimensions
-          (l, w, h) = (4.2 m, 0.1 m, 0.2 m) and mass 20 kg-->
                     <ixx>0.08333333333333334</ixx>
                     <iyy>29.46666666666666</iyy>
                     <izz>29.416666666666668</izz>
@@ -301,7 +296,7 @@
         <link name="G">
             <pose relative_to="E">0 0 0 0 -3.75246 0</pose>
             <inertial>
-                <pose>6 0 0 0 0 0</pose>
+                <pose>4.159 0 0 0 0 0</pose>
                 <mass>2</mass>
                 <inertia>
                     <ixx>0.08333333333333334</ixx>
@@ -313,10 +308,10 @@
                 </inertia>
             </inertial>
             <visual name="G_visual">
-                <pose>6 0 0 0 0 0</pose>
+                <pose>4.159 0 0 0 0 0</pose>
                 <geometry>
                     <box>
-                        <size>12 0.15 0.15</size>
+                        <size>8.318 0.15 0.15</size>
                     </box>
                 </geometry>
                 <material>
@@ -324,6 +319,47 @@
                 </material>
             </visual>
         </link>
+
+        <link name="H">
+            <pose relative_to="G">16.068 0 0 0 0 0</pose>
+            <inertial>
+                <pose>-3.875 0 0 0 0 0</pose>
+                <mass>0.5</mass>
+                <inertia>
+                    <ixx>0.0008333333333333334</ixx>
+                    <iyy>0.0046666666666666</iyy>
+                    <izz>0.00416666666666668</izz>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyz>0</iyz>
+                </inertia>
+            </inertial>
+            <visual name="G_visual">
+                <pose>-3.875 0.1 0 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>7.75 0.15 0.15</size>
+                    </box>
+                </geometry>
+                <material>
+                    <diffuse>1 0 1 1</diffuse>
+                </material>
+            </visual>
+        </link>
+
+        <joint name="joint_GH" type="fixed">
+            <parent>G</parent>
+            <child>H</child>
+            <axis>
+                <xyz expressed_in="__model__">0 1 0</xyz>
+                <limit>
+                    <effort>0</effort>
+                </limit>
+                <dynamics>
+                    <damping>0.0</damping>
+                </dynamics>
+            </axis>
+        </joint>
 
         <joint name="joint_EF" type="revolute">
             <parent>E</parent>
