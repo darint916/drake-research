@@ -15,23 +15,23 @@ def create_new_sdf(length_a, length_b, length_c, length_d, length_e):
 
     for link in root.findall('.//link'):
         match link.get('name'):
-            case 'link_a':
+            case 'A':
                 update_link(link, length_a)
-            case 'link_b':
+            case 'B':
                 update_link(link, length_b)
                 pose_elem = link.find('pose')
                 if pose_elem is not None:
                     pose_elem.text = f'{length_a} 0 0 0 0 0'
-            case 'link_c':
+            case 'C':
                 update_link(link, length_c)
-            case 'link_d':
+            case 'D':
                 update_link(link, length_d, -1)
-            case 'link_e':
+            case 'E':
                 update_link(link, length_e, -1)
                 pose_elem = link.find('pose')
                 if pose_elem is not None:
                     pose_elem.text = f'{length_a} 0 0 0 0 0'
-            case 'link_f':
+            case 'F':
                 update_link(link, length_f, -1)
                 pose_elem = link.find('pose')
                 if pose_elem is not None:

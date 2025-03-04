@@ -2,32 +2,29 @@
     <model name="four_bar">
         <link name="A">
             <inertial>
-                <pose>1 0 0 0 0 0</pose>
-                <mass>144</mass>
+                <pose>0.7625 0 0 0 0 0</pose>
+                <mass>43.16116</mass>
                 <inertia>
-                    <ixx>0.08333333333333334</ixx>
-                    <iyy>29.46666666666666</iyy>
-                    <izz>29.416666666666668</izz>
+                    <ixx>0.1272462932066667</ixx>
+                    <iyy>8.428345873686665</iyy>
+                    <izz>8.428345873686665</izz>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
                     <iyz>0</iyz>
                 </inertia>
             </inertial>
-            
             <visual name="A_visual">
-                <pose>1 0 0 0 0 0</pose>
+                <pose>0.7625 0 0 0 0 0</pose>
                 <geometry>
                     <box>
-                        <size>2 0.15 0.15</size>
+                        <size>1.525 0.133 0.133</size>
                     </box>
                 </geometry>
                 <material>
                     <diffuse>1 0 0 1</diffuse>
                 </material>
             </visual>
-            
             <visual name="A_pivot_visual">
-                
                 <pose>0 0 0 1.57079632679 0 0</pose>
                 <geometry>
                     <cylinder>
@@ -41,37 +38,31 @@
             </visual>
         </link>
         <link name="B">
-            
-            <pose relative_to="A">2 0 0 0 0 0</pose>
+            <pose relative_to="A">1.525 0 0 0 0 0</pose>
             <inertial>
-                
-                <pose>1.9 0 0 0 0 0</pose>
-                <mass>140</mass>
+                <pose>2.0125 0 0 0 0 0</pose>
+                <mass>113.91716000000001</mass>
                 <inertia>
-                    
-                    <ixx>0.08333333333333334</ixx>
-                    <iyy>29.46666666666666</iyy>
-                    <izz>29.416666666666668</izz>
+                    <ixx>0.3358467738733334</ixx>
+                    <iyy>153.96202257235336</iyy>
+                    <izz>153.96202257235336</izz>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
                     <iyz>0</iyz>
                 </inertia>
             </inertial>
-            
             <visual name="B_visual">
-                <pose>1.9 0 0 0 0 0</pose>
+                <pose>2.0125 0 0 0 0 0</pose>
                 <geometry>
                     <box>
-                        <size>4 0.15 0.15</size>
+                        <size>4.025 0.133 0.133</size>
                     </box>
                 </geometry>
                 <material>
                     <diffuse>0 0 1 1</diffuse>
                 </material>
             </visual>
-            
             <visual name="B_pivot_visual">
-                
                 <pose>0 -0.05 0 1.57079632679 0 0</pose>
                 <geometry>
                     <cylinder>
@@ -83,9 +74,7 @@
                     <diffuse>0 1 0 1</diffuse>
                 </material>
             </visual>
-            
             <visual name="CouplerPoint">
-                
                 <pose relative_to="B">2 0 -2 0 0 0</pose>
                 <geometry>
                     <sphere>
@@ -109,39 +98,32 @@
                 </material>
             </visual>
         </link>
-
         <link name="C">
-            
             <pose>1.5972 0 3.403 0 0 0</pose>
-            
             <inertial>
-                <pose>2.5 0 0 0 0 0</pose>
-                <mass>140</mass>
+                <pose>1.55185 0 0 0 0 0</pose>
+                <mass>87.84215888</mass>
                 <inertia>
-                    
-                    <ixx>0.08333333333333334</ixx>
-                    <iyy>29.46666666666666</iyy>
-                    <izz>29.416666666666668</izz>
+                    <ixx>0.2589733247380534</ixx>
+                    <iyy>70.64444070575755</iyy>
+                    <izz>70.64444070575755</izz>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
                     <iyz>0</iyz>
                 </inertia>
             </inertial>
-            
             <visual name="C_visual">
-                <pose>2.5 0 0 0 0 0</pose>
+                <pose>1.55185 0 0 0 0 0</pose>
                 <geometry>
                     <box>
-                        <size>5 0.15 0.15</size>
+                        <size>3.1037 0.133 0.133</size>
                     </box>
                 </geometry>
                 <material>
                     <diffuse>1 1 0 1</diffuse>
                 </material>
             </visual>
-            
             <visual name="C_pivot_visual">
-                
                 <pose>0 0 0 1.57079632679 0 0</pose>
                 <geometry>
                     <cylinder>
@@ -154,26 +136,25 @@
                 </material>
             </visual>
         </link>
-
         <link name="D">
             <pose relative_to="C">0 0 0 0 0 0</pose>
             <inertial>
-                <pose>-2.5 0 0 0 0 0</pose>
-                <mass>140</mass>
+                <pose>-3.00175 0 0 0 0 0</pose>
+                <mass>169.91345840000002</mass>
                 <inertia>
-                    <ixx>0.08333333333333334</ixx>
-                    <iyy>29.46666666666666</iyy>
-                    <izz>29.416666666666668</izz>
+                    <ixx>0.5009331942729335</ixx>
+                    <iyy>510.5857123548586</iyy>
+                    <izz>510.5857123548586</izz>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
                     <iyz>0</iyz>
                 </inertia>
             </inertial>
             <visual name="D_visual">
-                <pose>-2.5 0 0 0 0 0</pose>
+                <pose>-3.00175 0 0 0 0 0</pose>
                 <geometry>
                     <box>
-                        <size>5 0.15 0.15</size>
+                        <size>6.0035 0.133 0.133</size>
                     </box>
                 </geometry>
                 <material>
@@ -193,27 +174,25 @@
                 </material>
             </visual>
         </link>
-
-
         <link name="E">
-            <pose relative_to="D">-5 0 0 0 -1.57079632679 0</pose>
+            <pose relative_to="D">1.525 0 0 0 0 0</pose>
             <inertial>
-                <pose>-1 0 0 0 0 0</pose>
-                <mass>140</mass>
+                <pose>-0.75625 0 0 0 0 0</pose>
+                <mass>42.80738</mass>
                 <inertia>
-                    <ixx>0.08333333333333334</ixx>
-                    <iyy>29.46666666666666</iyy>
-                    <izz>29.416666666666668</izz>
+                    <ixx>0.12620329080333337</ixx>
+                    <iyy>8.223815845662083</iyy>
+                    <izz>8.223815845662083</izz>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
                     <iyz>0</iyz>
                 </inertia>
             </inertial>
             <visual name="E_visual">
-                <pose>-1 0 0 0 0 0</pose>
+                <pose>-0.75625 0 0 0 0 0</pose>
                 <geometry>
                     <box>
-                        <size>2 0.15 0.15</size>
+                        <size>1.5125 0.133 0.133</size>
                     </box>
                 </geometry>
                 <material>
@@ -235,24 +214,24 @@
         </link>
 
         <link name="F">
-            <pose relative_to="E">-2 0 0 0 -1.22173 0</pose>
+            <pose relative_to="E">1.525 0 0 0 0 0</pose>
             <inertial>
-                <pose>-5 0 0 0 0 0</pose>
-                <mass>140</mass>
+                <pose>-4.553599999999999 0 0 0 0 0</pose>
+                <mass>257.75561728</mass>
                 <inertia>
-                    <ixx>0.08333333333333334</ixx>
-                    <iyy>29.46666666666666</iyy>
-                    <izz>29.416666666666668</izz>
+                    <ixx>0.7599065190109868</ixx>
+                    <iyy>1781.9243136842028</iyy>
+                    <izz>1781.9243136842028</izz>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
                     <iyz>0</iyz>
                 </inertia>
             </inertial>
             <visual name="F_visual">
-                <pose>-5 0 0 0 0 0</pose>
+                <pose>-4.553599999999999 0 0 0 0 0</pose>
                 <geometry>
                     <box>
-                        <size>10 0.15 0.15</size>
+                        <size>9.107199999999999 0.133 0.133</size>
                     </box>
                 </geometry>
                 <material>
@@ -284,7 +263,6 @@
                 </material>
             </visual>
         </link>
-
         <link name="G">
             <pose relative_to="E">0 0 0 0 -3.75246 0</pose>
             <inertial>
@@ -311,7 +289,6 @@
                 </material>
             </visual>
         </link>
-
         <link name="H">
             <pose relative_to="G">16.068 0 0 0 0 0</pose>
             <inertial>
@@ -338,7 +315,6 @@
                 </material>
             </visual>
         </link>
-
         <joint name="joint_GH" type="fixed">
             <parent>G</parent>
             <child>H</child>
@@ -352,7 +328,6 @@
                 </dynamics>
             </axis>
         </joint>
-
         <joint name="joint_EF" type="revolute">
             <parent>E</parent>
             <child>F</child>
@@ -366,7 +341,6 @@
                 </dynamics>
             </axis>
         </joint>
-
         <joint name="joint_DE" type="revolute">
             <parent>D</parent>
             <child>E</child>
@@ -380,7 +354,6 @@
                 </dynamics>
             </axis>
         </joint>
-
         <joint name="joint_CD" type="fixed">
             <parent>C</parent>
             <child>D</child>
@@ -394,7 +367,6 @@
                 </dynamics>
             </axis>
         </joint>
-
         <joint name="joint_EG" type="fixed">
             <parent>E</parent>
             <child>G</child>
@@ -415,7 +387,6 @@
             <axis>
                 <xyz expressed_in="__model__">0 1 0</xyz>
                 <limit>
-                    
                 </limit>
                 <dynamics>
                     <damping>0.0</damping>
@@ -448,19 +419,15 @@
                 </dynamics>
             </axis>
         </joint>
-
         <frame name="Bf_bushing" attached_to="B">
             <pose relative_to="B">4.025 0 0 -1.57079632679 0 0</pose>
         </frame>
-
         <frame name="Fb_bushing" attached_to="F">
             <pose relative_to="F">-9.107199999999999 0 0 -1.57079632679 0 0</pose>
         </frame>
-
         <frame name="Bc_bushing" attached_to="B">
             <pose relative_to="B">4.025 0 0 -1.57079632679 0 0</pose>
         </frame>
-
         <frame name="Cb_bushing" attached_to="C">
             <pose relative_to="C">3.1037 0 0 -1.57079632679 0 0</pose>
         </frame>

@@ -53,8 +53,8 @@ joint_to_hum = 2
 def get_inertia(length: float, width=0.133, height=0.133, density=1600): 
     vol = length * width * height
     mass = vol * density
-    i_xx = 1/12 * mass * (width**2 + length**2)
+    i_xx = 1/12 * mass * (width**2 + height**2)
     i_yy = 1/12 * mass * (height**2 + length**2)
-    i_zz = 1/12 * mass * (height**2 + width**2)
+    i_zz = 1/12 * mass * (length**2 + width**2)
     
     return [i_xx, i_yy, i_zz, 0, 0, 0], mass
