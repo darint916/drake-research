@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <sdf version="1.7">
     <model name="four_bar">
         <link name="A">
@@ -14,7 +13,6 @@
                     <iyz>0</iyz>
                 </inertia>
             </inertial>
-            <!-- A skinny red box along the Ax axis -->
             <visual name="A_visual">
                 <pose>1 0 0 0 0 0</pose>
                 <geometry>
@@ -26,10 +24,7 @@
                     <diffuse>1 0 0 1</diffuse>
                 </material>
             </visual>
-            <!-- A visual representing the revolute joint between the world and
-       link A. -->
             <visual name="A_pivot_visual">
-                <!-- Rotation around Ax by 90° = π/2 radians ≈ 1.57079632679 -->
                 <pose>0 0 0 1.57079632679 0 0</pose>
                 <geometry>
                     <cylinder>
@@ -43,17 +38,11 @@
             </visual>
         </link>
         <link name="B">
-            <!-- The frame B measured in A, X_AB, is a translation along the Ax
-      axis, and a small translation along the Ay (revolute) axis for visual
-      purposes. This link is also called 'Coupler' in the diagram in README.md -->
             <pose relative_to="A">2 0 0 0 0 0</pose>
             <inertial>
-                <!-- Bcm (B's center of mass) is located at the midpoint of the 4 meter long link. -->
                 <pose>1.9 0 0 0 0 0</pose>
                 <mass>140</mass>
                 <inertia>
-                    <!-- Inertia tensor for a solid cuboid of dimensions
-          (l, w, h) = (4.2 m, 0.1 m, 0.2 m) and mass 20 kg-->
                     <ixx>0.08333333333333334</ixx>
                     <iyy>29.46666666666666</iyy>
                     <izz>29.416666666666668</izz>
@@ -62,7 +51,6 @@
                     <iyz>0</iyz>
                 </inertia>
             </inertial>
-            <!-- A skinny blue box along the Bx axis -->
             <visual name="B_visual">
                 <pose>1.9 0 0 0 0 0</pose>
                 <geometry>
@@ -74,10 +62,7 @@
                     <diffuse>0 0 1 1</diffuse>
                 </material>
             </visual>
-            <!-- A visual representing the revolute joint between
-      link A and link B.  -->
             <visual name="B_pivot_visual">
-                <!-- Rotation around Bx by 90° = π/2 radians ≈ 1.57079632679 -->
                 <pose>0 -0.05 0 1.57079632679 0 0</pose>
                 <geometry>
                     <cylinder>
@@ -89,9 +74,7 @@
                     <diffuse>0 1 0 1</diffuse>
                 </material>
             </visual>
-            <!-- A visual representing the 'Coupler-Point' P -->
             <visual name="CouplerPoint">
-                <!-- Translation down Bx by 2 and down Bz by -2 -->
                 <pose relative_to="B">2 0 -2 0 0 0</pose>
                 <geometry>
                     <sphere>
@@ -115,17 +98,12 @@
                 </material>
             </visual>
         </link>
-
         <link name="C">
-            <!-- <pose>0.5972 0 1.403 0 0 0</pose> -->
             <pose>1.5972 0 3.403 0 0 0</pose>
-            <!-- <pose>1.1944 0 2.806 0 0 0</pose> -->
             <inertial>
                 <pose>2.5 0 0 0 0 0</pose>
                 <mass>140</mass>
                 <inertia>
-                    <!-- Inertia tensor for a solid cuboid of dimensions
-          (l, w, h) = (4.2 m, 0.1 m, 0.2 m) and mass 20 kg-->
                     <ixx>0.08333333333333334</ixx>
                     <iyy>29.46666666666666</iyy>
                     <izz>29.416666666666668</izz>
@@ -134,7 +112,6 @@
                     <iyz>0</iyz>
                 </inertia>
             </inertial>
-            <!-- A skinny yellow box along the Bx axis -->
             <visual name="C_visual">
                 <pose>2.5 0 0 0 0 0</pose>
                 <geometry>
@@ -146,10 +123,7 @@
                     <diffuse>1 1 0 1</diffuse>
                 </material>
             </visual>
-            <!-- A visual representing the revolute joint between the world
-      and link C.  -->
             <visual name="C_pivot_visual">
-                <!-- Rotation around Cx by 90° = π/2 radians ≈ 1.57079632679 -->
                 <pose>0 0 0 1.57079632679 0 0</pose>
                 <geometry>
                     <cylinder>
@@ -162,7 +136,6 @@
                 </material>
             </visual>
         </link>
-
         <link name="D">
             <pose relative_to="C">0 0 0 0 0 0</pose>
             <inertial>
@@ -201,8 +174,6 @@
                 </material>
             </visual>
         </link>
-
-
         <link name="E">
             <pose relative_to="D">-5 0 0 0 -1.57079632679 0</pose>
             <inertial>
@@ -292,7 +263,6 @@
                 </material>
             </visual>
         </link>
-
         <link name="G">
             <pose relative_to="E">0 0 0 0 -3.75246 0</pose>
             <inertial>
@@ -319,7 +289,6 @@
                 </material>
             </visual>
         </link>
-
         <link name="H">
             <pose relative_to="G">16.068 0 0 0 0 0</pose>
             <inertial>
@@ -346,7 +315,6 @@
                 </material>
             </visual>
         </link>
-
         <joint name="joint_GH" type="fixed">
             <parent>G</parent>
             <child>H</child>
@@ -360,7 +328,6 @@
                 </dynamics>
             </axis>
         </joint>
-
         <joint name="joint_EF" type="revolute">
             <parent>E</parent>
             <child>F</child>
@@ -374,7 +341,6 @@
                 </dynamics>
             </axis>
         </joint>
-
         <joint name="joint_DE" type="revolute">
             <parent>D</parent>
             <child>E</child>
@@ -388,7 +354,6 @@
                 </dynamics>
             </axis>
         </joint>
-
         <joint name="joint_CD" type="fixed">
             <parent>C</parent>
             <child>D</child>
@@ -402,7 +367,6 @@
                 </dynamics>
             </axis>
         </joint>
-
         <joint name="joint_EG" type="fixed">
             <parent>E</parent>
             <child>G</child>
@@ -423,7 +387,6 @@
             <axis>
                 <xyz expressed_in="__model__">0 1 0</xyz>
                 <limit>
-                    <!-- <effort>0</effort> -->
                 </limit>
                 <dynamics>
                     <damping>0.0</damping>
@@ -456,19 +419,15 @@
                 </dynamics>
             </axis>
         </joint>
-
         <frame name="Bf_bushing" attached_to="B">
             <pose relative_to="B">2 0 0 -1.57079632679 0 0</pose>
         </frame>
-
         <frame name="Fb_bushing" attached_to="F">
             <pose relative_to="F">-10 0 0 -1.57079632679 0 0</pose>
         </frame>
-
         <frame name="Bc_bushing" attached_to="B">
             <pose relative_to="B">4 0 0 -1.57079632679 0 0</pose>
         </frame>
-
         <frame name="Cb_bushing" attached_to="C">
             <pose relative_to="C">5 0 0 -1.57079632679 0 0</pose>
         </frame>
