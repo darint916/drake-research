@@ -48,7 +48,7 @@ def create_new_sdf(length_a, length_b, length_c, length_d, length_e):
                 case 'Bf_bushing':
                     pose_elem.text = f'{length_b} 0 0 -1.57079632679 0 0'
                 case 'Fb_bushing':
-                    pose_elem.text = f'{length_f} 0 0 -1.57079632679 0 0'
+                    pose_elem.text = f'-{length_f} 0 0 -1.57079632679 0 0'
                 case 'Bc_bushing':
                     pose_elem.text = f'{length_b} 0 0 -1.57079632679 0 0'
                 case 'Cb_bushing':
@@ -59,7 +59,7 @@ def create_new_sdf(length_a, length_b, length_c, length_d, length_e):
     print('New SDF created at: ', output_path)
 
 def update_link(link, length, sign=1):
-    inertia_value, mass_value = get_inertia()
+    inertia_value, mass_value = get_inertia(length)
     inertial = link.find('inertial')
     if inertial is not None:
         mass_elem = inertial.find('mass')
@@ -87,3 +87,6 @@ def update_link(link, length, sign=1):
             pose_elem = visual.find('pose')
             if pose_elem is not None:
                 pose_elem.text = f'{sign * (length / 2)} 0 0 0 0 0'
+
+if __name__ == '__main__':
+    create_new_sdf(1.525, 1.5125 + 2.5125, 3.1037, 6.0035, 1.5125)

@@ -50,7 +50,7 @@ link_length = 4.0
 joint_to_hum = 2
  
 # assume carbon fiber (lower density bound)
-def get_inertia(length, width=0.133, height=0.133, density=1600): 
+def get_inertia(length: float, width=0.133, height=0.133, density=1600): 
     vol = length * width * height
     mass = vol * density
     i_xx = 1/12 * mass * (width**2 + length**2)
