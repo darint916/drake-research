@@ -20,4 +20,4 @@ def max_vel_cost():
     print('Max speed: ', max_speed)
     
     #cost function optimize based on z vel max
-    return -max_vz
+    return -avg_vz

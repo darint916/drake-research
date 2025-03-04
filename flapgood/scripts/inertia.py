@@ -1,6 +1,9 @@
 #cylinder inertia about center
 
 # drive link
+import numpy as np
+
+
 mass = 0.00016893
 radius = 0.00075
 height = 0.0383
@@ -48,7 +51,7 @@ print("<iyz>"+str(I_yz)+"</iyz>")
 
 link_length = 4.0
 joint_to_hum = 2
- 
+
 # assume carbon fiber (lower density bound)
 def get_inertia(length: float, width=0.133, height=0.133, density=1600): 
     vol = length * width * height
@@ -58,3 +61,14 @@ def get_inertia(length: float, width=0.133, height=0.133, density=1600):
     i_zz = 1/12 * mass * (length**2 + width**2)
     
     return [i_xx, i_yy, i_zz, 0, 0, 0], mass
+
+def mag_angle_to_points(length: float, angle: float, invert=False, deg=False):
+    if deg:
+        angle = np.radians(angle)
+    x = length * np.cos(angle)
+    y = length * np.sin(angle)
+    if invert:
+        x, y = y, x
+    return x, y
+
+print(mag_angle_to_points(5.343, 106.31-90, True, True))

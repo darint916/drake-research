@@ -99,7 +99,7 @@
             </visual>
         </link>
         <link name="C">
-            <pose>1.5972 0 3.403 0 0 0</pose>
+            <pose>1.5004972495905828 0 5.127977866954097 0 0 0</pose>
             <inertial>
                 <pose>1.55185 0 0 0 0 0</pose>
                 <mass>87.84215888</mass>
