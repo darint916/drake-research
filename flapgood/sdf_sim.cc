@@ -314,7 +314,7 @@ int DoMain()
 
     // logger plot of world velocities
     const auto& world_vel_logs = world_vel_logger->FindLog(simulator.get_context());
-    std::ofstream file("/home/darin/Github/drake/flapgood/four_bar_vel_end.csv");
+    std::ofstream file("/home/darin/Github/drake/flapgood/opt_data/four_bar_vel_end.csv");
     // Check the number of states and samples
     const int num_states =
         world_vel_logs.data().rows(); // Number of state variables (e.g., joint positions, velocities)
@@ -345,7 +345,7 @@ int DoMain()
     //--------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------
     //wingtip vel
-    std::ofstream file_tip("/home/darin/Github/drake/flapgood/four_bar_vel_tip.csv");
+    std::ofstream file_tip("/home/darin/Github/drake/flapgood/opt_data/four_bar_vel_tip.csv");
     // Write header
     file_tip << "time, vx, vy, vz, wx, wy, wz\n";
     const BodyIndex wing_tip_index = four_bar.GetBodyByName("H").index();
