@@ -35,7 +35,7 @@ def create_new_sdf(length_a, length_b, length_c, length_d, length_e):
                 update_link(link, length_f, -1)
                 pose_elem = link.find('pose')
                 if pose_elem is not None:
-                    pose_elem.text = f'{length_a} 0 0 0 0 0'
+                    pose_elem.text = f'{length_f} 0 0 0 0 0'
             case _:
                 print('No match found')
                 continue
@@ -46,7 +46,7 @@ def create_new_sdf(length_a, length_b, length_c, length_d, length_e):
         if pose_elem is not None:
             match name:
                 case 'Bf_bushing':
-                    pose_elem.text = f'{length_b} 0 0 -1.57079632679 0 0'
+                    pose_elem.text = f'{length_b - length_e} 0 0 -1.57079632679 0 0'
                 case 'Fb_bushing':
                     pose_elem.text = f'-{length_f} 0 0 -1.57079632679 0 0'
                 case 'Bc_bushing':
