@@ -99,7 +99,7 @@
             </visual>
         </link>
         <link name="C">
-            <pose>1.5004972495905828 0 5.127977866954097 0 0 0</pose>
+            <pose>1.5004972495905828 0 5.127977866954097 0 3.14159 0</pose>
             <inertial>
                 <pose>1.55185 0 0 0 0 0</pose>
                 <mass>87.84215888</mass>
@@ -175,7 +175,7 @@
             </visual>
         </link>
         <link name="E">
-            <pose relative_to="D">-6.0035 0 0 0 0 0</pose>
+            <pose relative_to="D">-6.0035 0 0 0 1.5708 0</pose>
             <inertial>
                 <pose>-0.75625 0 0 0 0 0</pose>
                 <mass>42.80738</mass>
@@ -214,7 +214,7 @@
         </link>
 
         <link name="F">
-            <pose relative_to="E">-1.525 0 0 0 -1.22173 0</pose>
+            <pose relative_to="E">-1.5125 0 0 0 1.5708 0</pose>
             <inertial>
                 <pose>-4.553599999999999 0 0 0 0 0</pose>
                 <mass>257.75561728</mass>
@@ -264,7 +264,7 @@
             </visual>
         </link>
         <link name="G">
-            <pose relative_to="E">0 0 0 0 -3.75246 0</pose>
+            <pose relative_to="E">0 0 0 0 1.91986 0</pose>
             <inertial>
                 <pose>4.159 0 0 0 0 0</pose>
                 <mass>2</mass>
@@ -420,7 +420,7 @@
             </axis>
         </joint>
         <frame name="Bf_bushing" attached_to="B">
-            <pose relative_to="B">4.025 0 0 -1.57079632679 0 0</pose>
+            <pose relative_to="B">2.5125 0 0 -1.57079632679 0 0</pose>
         </frame>
         <frame name="Fb_bushing" attached_to="F">
             <pose relative_to="F">-9.107199999999999 0 0 -1.57079632679 0 0</pose>
