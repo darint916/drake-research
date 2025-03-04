@@ -30,12 +30,12 @@ def create_new_sdf(length_a, length_b, length_c, length_d, length_e):
                 update_link(link, length_e, -1)
                 pose_elem = link.find('pose')
                 if pose_elem is not None:
-                    pose_elem.text = f'{length_a} 0 0 0 0 0'
+                    pose_elem.text = f'-{length_d} 0 0 0 0 0'
             case 'F':
                 update_link(link, length_f, -1)
                 pose_elem = link.find('pose')
                 if pose_elem is not None:
-                    pose_elem.text = f'{length_f} 0 0 0 0 0'
+                    pose_elem.text = f'-{length_e} 0 0 0 -1.22173 0'
             case _:
                 print('No match found')
                 continue

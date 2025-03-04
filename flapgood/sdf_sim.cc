@@ -39,12 +39,12 @@ using Eigen::Vector3d;
 
 // Define gflags parameters (these could be overridden on the command-line).
 DEFINE_double(simulation_time, 15.0, "Duration of the simulation in seconds.");
-DEFINE_double(force_stiffness, 30000000,
+DEFINE_double(force_stiffness, 300000000,
               "Translational stiffness (N/m) for the LinearBushingRollPitchYaw force element.");
-DEFINE_double(force_damping, 15000, "Translational damping (N·s/m) for the LinearBushingRollPitchYaw force element.");
-DEFINE_double(torque_stiffness, 30000000,
+DEFINE_double(force_damping, 150000, "Translational damping (N·s/m) for the LinearBushingRollPitchYaw force element.");
+DEFINE_double(torque_stiffness, 300000000,
               "Rotational stiffness (N·m/rad) for the LinearBushingRollPitchYaw force element.");
-DEFINE_double(torque_damping, 1500, "Rotational damping (N·m·s/rad) for the LinearBushingRollPitchYaw force element.");
+DEFINE_double(torque_damping, 15000, "Rotational damping (N·m·s/rad) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(applied_torque, -10000, "Constant torque applied at joint_WA.");
 DEFINE_double(initial_velocity, 0, "Initial angular rate (radians per second) at joint_WA.");
 
@@ -225,20 +225,20 @@ int DoMain()
 
     // fourbar
     const RevoluteJoint<double>& joint_WA = four_bar.GetJointByName<RevoluteJoint>("joint_WA");
-    const RevoluteJoint<double>& joint_AB = four_bar.GetJointByName<RevoluteJoint>("joint_AB");
-    const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
+    // const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
+    // const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
 
     // Initialize joint angles.
     // Here we choose the angles so that joint_WA ≈ 75.52°, joint_AB and joint_WC ≈ 104.48°.
     // const double qA = std::atan2(std::sqrt(15.0), 1.0);
     // const double qB = M_PI - qA;
     // const double qC = qB;
-    const double qA = 0;
-    const double qB = 0;
-    const double qC = 0;
-    joint_WA.set_angle(&plant_context, qA);
-    joint_AB.set_angle(&plant_context, qB);
-    joint_WC.set_angle(&plant_context, qC);
+    // const double qA = 0;
+    // const double qB = 0;
+    // const double qC = 0;
+    joint_WA.set_angle(&plant_context, M_PI);
+    // joint_WC.set_angle(&plant_context, M_PI);
+    // joint_WC.set_angle(&plant_context, qC);
 
     // Set the initial angular rate for joint_WA.
     joint_WA.set_angular_rate(&plant_context, FLAGS_initial_velocity);
