@@ -21,7 +21,7 @@ def create_new_sdf(length_a, length_b, length_c, length_d, length_e):
                 update_link(link, length_b)
                 pose_elem = link.find('pose')
                 if pose_elem is not None:
-                    pose_elem.text = f'{length_a} 0 0 0 0 0'
+                    pose_elem.text = f'{length_a} 0 0 0 1.5708 0'
             case 'C':
                 update_link(link, length_c)
             case 'D':

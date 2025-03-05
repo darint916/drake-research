@@ -110,7 +110,7 @@ int DoMain()
     // Load the four-bar model from its SDF file.
     // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/wing_asm_simple.sdf";
     // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/wing_asm_flat.sdf";
-    const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_more.sdf";
+    const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_more_iterated.sdf";
     // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_bar.sdf";
     // const std::string sdf_url = "/home/darin/Github/drake/flapgood/models/four_bar_wield.sdf";
     Parser parser(&four_bar);
@@ -324,7 +324,7 @@ int DoMain()
     std::cout << "Logged " << num_samples << " samples with " << num_states << " pose variables each." << std::endl;
     four_bar.GetVelocityNames();
     // Write header
-    file << "time, vx, vy, vz, wx, wy, wz\n";
+    file << "time,vx,vy,vz,wx,wy,wz\n";
 
     int start_index = 6 * wing_body_index;
     for (int i = 0; i < world_vel_logs.num_samples(); i++)
@@ -334,8 +334,8 @@ int DoMain()
         Eigen::Vector3d linear_velocity = world_vel_logs.data().col(i).segment<3>(start_index);
         Eigen::Vector3d angular_velocity = world_vel_logs.data().col(i).segment<3>(start_index + 3);
 
-        file << ", " << linear_velocity.x() << ", " << linear_velocity.y() << ", " << linear_velocity.z();
-        file << ", " << angular_velocity.x() << ", " << angular_velocity.y() << ", " << angular_velocity.z();
+        file << "," << linear_velocity.x() << "," << linear_velocity.y() << "," << linear_velocity.z();
+        file << "," << angular_velocity.x() << "," << angular_velocity.y() << "," << angular_velocity.z();
         file << "\n";
     }
 
@@ -347,7 +347,7 @@ int DoMain()
     //wingtip vel
     std::ofstream file_tip("/home/darin/Github/drake/flapgood/opt_data/four_bar_vel_tip.csv");
     // Write header
-    file_tip << "time, vx, vy, vz, wx, wy, wz\n";
+    file_tip << "time,vx,vy,vz,wx,wy,wz\n";
     const BodyIndex wing_tip_index = four_bar.GetBodyByName("H").index();
     std::cout << "Wing body index: " << wing_tip_index << std::endl;
 
@@ -359,8 +359,8 @@ int DoMain()
         Eigen::Vector3d linear_velocity = world_vel_logs.data().col(i).segment<3>(start_index);
         Eigen::Vector3d angular_velocity = world_vel_logs.data().col(i).segment<3>(start_index + 3);
 
-        file_tip << ", " << linear_velocity.x() << ", " << linear_velocity.y() << ", " << linear_velocity.z();
-        file_tip << ", " << angular_velocity.x() << ", " << angular_velocity.y() << ", " << angular_velocity.z();
+        file_tip << "," << linear_velocity.x() << "," << linear_velocity.y() << "," << linear_velocity.z();
+        file_tip << "," << angular_velocity.x() << "," << angular_velocity.y() << "," << angular_velocity.z();
         file_tip << "\n";
     }
 
@@ -369,10 +369,10 @@ int DoMain()
     std::cout << "Log written to four_bar_vel_tip.csv" << std::endl;
 
 
-    // (Optionally, keep the process alive so that the Meshcat visualization remains open.)
-    while (true)
-    {
-    }
+    // // (Optionally, keep the process alive so that the Meshcat visualization remains open.)
+    // while (true)
+    // {
+    // }
 
     return 0;
 }
