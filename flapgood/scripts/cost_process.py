@@ -3,10 +3,10 @@ import numpy as np
 import pandas as pd
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-csv_path = os.path.join(current_dir, '..', 'opt_data', 'four_bar_vel_end.csv')
-df = pd.read_csv(csv_path)
-df = df[(df['time'] >= 1.0) & (df['time'] <= 5.0)]
 def max_vel_cost():
+    csv_path = os.path.join(current_dir, '..', 'opt_data', 'four_bar_vel_end.csv')
+    df = pd.read_csv(csv_path)
+    df = df[(df['time'] >= 1.0) & (df['time'] <= 5.0)]
     print("Calculating cost")
     # print(df.head())
     # print(df.columns)

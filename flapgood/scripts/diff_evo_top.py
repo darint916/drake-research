@@ -1,4 +1,5 @@
 import json
+import time
 from iterative_sdf import create_new_sdf
 from cost_process import max_vel_cost
 import numpy as np
@@ -80,6 +81,7 @@ def sim_start(opt_params):
         "opt_params": opt_params.tolist(),
         "cost": cost
     }
+    Message.data("sim iter end \n result_json: " + str(result_json))
     write_to_json(result_json, os.path.join(data_json_dir_path))
     return cost
 
@@ -88,7 +90,11 @@ def sim_launch():
     try:
         Message.info("Launching sim")
         results = subprocess.Popen(["bazel", "run", "//flapgood:sdf_sim"], cwd=launch_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        Message.warning(results.stdout)
+        time.sleep(5)
+        for line in results.stdout:
+            Message.info(line)
+        Message.debug("Sim print done")
+        
     except subprocess.CalledProcessError as e:
         Message.error("Error in sim_launch: " + str(e))
         Message.error("Output: " + str(e.output))
