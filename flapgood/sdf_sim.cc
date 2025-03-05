@@ -38,14 +38,14 @@ using drake::systems::Simulator;
 using Eigen::Vector3d;
 
 // Define gflags parameters (these could be overridden on the command-line).
-DEFINE_double(simulation_time, 5.0, "Duration of the simulation in seconds.");
-DEFINE_double(force_stiffness, 300000000,
+DEFINE_double(simulation_time, 15, "Duration of the simulation in seconds.");
+DEFINE_double(force_stiffness, 3000000,
               "Translational stiffness (N/m) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(force_damping, 150000, "Translational damping (N·s/m) for the LinearBushingRollPitchYaw force element.");
-DEFINE_double(torque_stiffness, 300000000,
+DEFINE_double(torque_stiffness, 300000,
               "Rotational stiffness (N·m/rad) for the LinearBushingRollPitchYaw force element.");
-DEFINE_double(torque_damping, 15000, "Rotational damping (N·m·s/rad) for the LinearBushingRollPitchYaw force element.");
-DEFINE_double(applied_torque, 10000, "Constant torque applied at joint_WA.");
+DEFINE_double(torque_damping, 1500, "Rotational damping (N·m·s/rad) for the LinearBushingRollPitchYaw force element.");
+DEFINE_double(applied_torque, -10000, "Constant torque applied at joint_WA.");
 DEFINE_double(initial_velocity, 0, "Initial angular rate (radians per second) at joint_WA.");
 
 // Wrap the simulation in a dedicated namespace.
@@ -241,7 +241,7 @@ int DoMain()
     // joint_WC.set_angle(&plant_context, qC);
 
     // Set the initial angular rate for joint_WA.
-    joint_WA.set_angular_rate(&plant_context, FLAGS_initial_velocity);
+    joint_WA.set_angular_rate(&plant_context, 0);
 
     // Optionally, one might record the simulation start time.
     auto start_time = std::chrono::high_resolution_clock::now();

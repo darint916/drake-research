@@ -2,7 +2,7 @@
     <model name="four_bar">
         <link name="A">
             <inertial>
-                <pose>0.7625 0 0 0 0 0</pose>
+                <pose>0.7625 0 0 0 3.14159 0</pose>
                 <mass>43.16116</mass>
                 <inertia>
                     <ixx>0.1272462932066667</ixx>
@@ -38,7 +38,7 @@
             </visual>
         </link>
         <link name="B">
-            <pose relative_to="A">1.525 0 0 0 0 0</pose>
+            <pose relative_to="A">1.525 0 0 0 1.5708 0</pose>
             <inertial>
                 <pose>2.0125 0 0 0 0 0</pose>
                 <mass>113.91716000000001</mass>
@@ -324,7 +324,7 @@
                     <effort>0</effort>
                 </limit>
                 <dynamics>
-                    <damping>0.0</damping>
+                    <damping>10.0</damping>
                 </dynamics>
             </axis>
         </joint>
@@ -337,7 +337,7 @@
                     <effort>0</effort>
                 </limit>
                 <dynamics>
-                    <damping>0.0</damping>
+                    <damping>10.0</damping>
                 </dynamics>
             </axis>
         </joint>
@@ -350,7 +350,7 @@
                     <effort>0</effort>
                 </limit>
                 <dynamics>
-                    <damping>0.0</damping>
+                    <damping>10.0</damping>
                 </dynamics>
             </axis>
         </joint>
@@ -363,7 +363,7 @@
                     <effort>0</effort>
                 </limit>
                 <dynamics>
-                    <damping>0.0</damping>
+                    <damping>10.0</damping>
                 </dynamics>
             </axis>
         </joint>
@@ -376,7 +376,7 @@
                     <effort>0</effort>
                 </limit>
                 <dynamics>
-                    <damping>0.0</damping>
+                    <damping>10.0</damping>
                 </dynamics>
             </axis>
         </joint>
@@ -389,7 +389,7 @@
                 <limit>
                 </limit>
                 <dynamics>
-                    <damping>0.0</damping>
+                    <damping>100.0</damping>
                 </dynamics>
             </axis>
         </joint>
@@ -402,7 +402,7 @@
                     <effort>0</effort>
                 </limit>
                 <dynamics>
-                    <damping>0.0</damping>
+                    <damping>10.0</damping>
                 </dynamics>
             </axis>
         </joint>
@@ -415,7 +415,7 @@
                     <effort>0</effort>
                 </limit>
                 <dynamics>
-                    <damping>0.0</damping>
+                    <damping>10.0</damping>
                 </dynamics>
             </axis>
         </joint>
