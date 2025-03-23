@@ -27,6 +27,10 @@
 #include "drake/systems/framework/leaf_system.h"
 #include "drake/visualization/visualization_config_functions.h"
 
+#include "drake/systems/controllers/pid_controller.h"
+#include "drake/systems/primitives/constant_vector_source.h"
+#include "drake/systems/primitives/matrix_gain.h"
+
 // Use the appropriate Drake namespaces.
 using drake::geometry::SceneGraph;
 using drake::multibody::LinearBushingRollPitchYaw;
@@ -39,9 +43,9 @@ using Eigen::Vector3d;
 
 // Define gflags parameters (these could be overridden on the command-line).
 DEFINE_double(simulation_time, 15, "Duration of the simulation in seconds.");
-DEFINE_double(force_stiffness, 3000000,
+DEFINE_double(force_stiffness, 10000000,
               "Translational stiffness (N/m) for the LinearBushingRollPitchYaw force element.");
-DEFINE_double(force_damping, 150000, "Translational damping (N·s/m) for the LinearBushingRollPitchYaw force element.");
+DEFINE_double(force_damping, 100000, "Translational damping (N·s/m) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(torque_stiffness, 300000,
               "Rotational stiffness (N·m/rad) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(torque_damping, 1500, "Rotational damping (N·m·s/rad) for the LinearBushingRollPitchYaw force element.");
@@ -57,6 +61,24 @@ namespace four_bar
 {
 namespace
 {
+
+class ScalarTo2Vector : public drake::systems::LeafSystem<double>
+{
+  public:
+    ScalarTo2Vector()
+    {
+        this->DeclareVectorInputPort("scalar", 1);
+        this->DeclareVectorOutputPort("vector", 2, &ScalarTo2Vector::CalcOutput);
+    }
+
+  private:
+    void CalcOutput(const drake::systems::Context<double>& context, drake::systems::BasicVector<double>* output) const
+    {
+        output->SetAtIndex(0, 0); // use pos 0
+        const auto& input_vector = this->EvalVectorInput(context, 0)->get_value();
+        output->SetAtIndex(1, input_vector(0));
+    }
+};
 
 class BodySpatialVelocitiesToVector : public drake::systems::LeafSystem<double>
 {
@@ -176,6 +198,40 @@ int DoMain()
     const BodyIndex wing_body_index = four_bar.GetBodyByName("G").index();
     auto world_vel_logger = drake::systems::LogVectorOutput(world_velocities_output, &builder);
 
+    // Add pid controller
+    const RevoluteJoint<double>& joint_WA = four_bar.GetJointByName<RevoluteJoint>("joint_WA");
+    int state_dim = four_bar.num_multibody_states();
+    Eigen::RowVectorXd extract_vec = Eigen::RowVectorXd::Zero(state_dim); // all zeros to mult and extract
+    int driving_index = joint_WA.velocity_start();
+    std::cout << "driving index: " << driving_index << std::endl;
+    std::cout << "straight idx: " << joint_WA.index() << std::endl;
+    std::cout << "state dim: " << state_dim << std::endl;
+    std::cout << "num_pos: " << four_bar.num_positions() << std::endl;
+    int velocity_index = four_bar.num_positions() + joint_WA.velocity_start();
+    extract_vec(velocity_index) = 1;
+    auto velocity_extractor = builder.AddSystem<drake::systems::MatrixGain<double>>(extract_vec);
+    builder.Connect(four_bar.get_state_output_port(), velocity_extractor->get_input_port());
+
+    auto state2d = builder.AddSystem<ScalarTo2Vector>();
+    state2d->set_name("state_2d");
+    builder.Connect(velocity_extractor->get_output_port(), state2d->get_input_port());
+    //target
+    const double desired_speed = -20.0; // 60 rad/s
+    Eigen::Vector2d desired_state;
+    desired_state << 0, desired_speed;
+    auto desired_speed_source =
+        builder.AddSystem<drake::systems::ConstantVectorSource<double>>(desired_state);
+
+    Eigen::VectorXd kp = Eigen::VectorXd::Constant(1, 1000000);
+    Eigen::VectorXd ki = Eigen::VectorXd::Constant(1, 10000.0);
+    Eigen::VectorXd kd = Eigen::VectorXd::Constant(1, 50000);
+
+    auto pid_controller = builder.AddSystem<drake::systems::controllers::PidController<double>>(kp, ki, kd);
+    pid_controller->set_name("PIDController");
+    builder.Connect(state2d->get_output_port(), pid_controller->get_input_port_estimated_state());
+    builder.Connect(pid_controller->get_output_port(), four_bar.get_actuation_input_port());
+    builder.Connect(desired_speed_source->get_output_port(), pid_controller->get_input_port_desired_state());
+
     // Add default visualization (which sets up Meshcat if available).
     drake::visualization::AddDefaultVisualization(&builder);
 
@@ -187,7 +243,7 @@ int DoMain()
     auto& plant_context = four_bar.GetMyMutableContextFromRoot(diagram_context.get());
 
     // Apply a constant torque at joint_WA.
-    four_bar.get_actuation_input_port().FixValue(&plant_context, FLAGS_applied_torque);
+    // four_bar.get_actuation_input_port().FixValue(&plant_context, FLAGS_applied_torque);
 
     // Set initial conditions.
     // Retrieve joints by name.
@@ -224,7 +280,6 @@ int DoMain()
     // joint_WC.set_angular_rate(&plant_context, FLAGS_initial_velocity);
 
     // fourbar
-    const RevoluteJoint<double>& joint_WA = four_bar.GetJointByName<RevoluteJoint>("joint_WA");
     // const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
     // const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
 
@@ -344,7 +399,7 @@ int DoMain()
     std::cout << "Log written to four_bar_vel.csv" << std::endl;
     //--------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------
-    //wingtip vel
+    // wingtip vel
     std::ofstream file_tip("/home/darin/Github/drake/flapgood/opt_data/four_bar_vel_tip.csv");
     // Write header
     file_tip << "time,vx,vy,vz,wx,wy,wz\n";
@@ -368,11 +423,10 @@ int DoMain()
     file_tip.close();
     std::cout << "Log written to four_bar_vel_tip.csv" << std::endl;
 
-
     // // (Optionally, keep the process alive so that the Meshcat visualization remains open.)
-    // while (true)
-    // {
-    // }
+    while (true)
+    {
+    }
 
     return 0;
 }

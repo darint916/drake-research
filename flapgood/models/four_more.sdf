@@ -2,7 +2,7 @@
     <model name="four_bar">
         <link name="A">
             <inertial>
-                <pose>0.7625 0 0 0 3.14159 0</pose>
+                <pose>0.7625 0 0 0 0 0</pose>
                 <mass>43.16116</mass>
                 <inertia>
                     <ixx>0.1272462932066667</ixx>
