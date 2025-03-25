@@ -468,9 +468,9 @@ int DoMain()
     file_tip_angle.close();
     std::cout << "Log written to four_bar_tip_angle.csv" << std::endl;
     // // (Optionally, keep the process alive so that the Meshcat visualization remains open.)
-    while (true)
-    {
-    }
+    // while (true)
+    // {
+    // }
 
     return 0;
 }
