@@ -52,7 +52,7 @@ def max_vel_cost():
     print('stroke cost: ', cost)
     cost += angle_weight
     print('Total cost: ', cost)
-    return -cost
+    return (-cost, flap_range, avg_downstroke, avg_upstroke) 
 # 60 30-70
 # 
 if __name__ == '__main__':

@@ -46,9 +46,9 @@ def start_diff_evo(iterations: int = 10, title: str = 'beta_test', popsize: int 
     #unit scale
     original_lengths = original_lengths / 10
     
-    parameter_lower_bound = original_lengths * 0.5
+    parameter_lower_bound = original_lengths * 0.1
     parameter_lower_bound[5] = 5.343
-    parameter_upper_bound = original_lengths * 2
+    parameter_upper_bound = original_lengths * 6
     parameter_upper_bound[5] = 5.343
     bounds = sc.optimize.Bounds(parameter_lower_bound, parameter_upper_bound)
 
@@ -76,9 +76,12 @@ def sim_start(opt_params):
     global population_counter
     population_counter += 1
     #bit of post processing
-    cost = max_vel_cost()
+    cost, flap_range, avg_downstroke, avg_upstroke= max_vel_cost()
     result_json = {
         "opt_params": opt_params.tolist(),
+        "flap_range": flap_range,
+        "avg_downstroke": avg_downstroke,
+        "avg_upstroke": avg_upstroke,
         "cost": cost
     }
     Message.data("sim iter end \n result_json: " + str(result_json))
@@ -137,4 +140,4 @@ def convert_to_serializable(obj):
 
 
 if __name__ == '__main__':
-    start_diff_evo(iterations = 100, popsize=50)
+    start_diff_evo(title = 'alpha_2', iterations = 100, popsize=50)
