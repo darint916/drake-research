@@ -212,11 +212,13 @@ int DoMain()
     auto velocity_extractor = builder.AddSystem<drake::systems::MatrixGain<double>>(extract_vec);
     builder.Connect(four_bar.get_state_output_port(), velocity_extractor->get_input_port());
 
+    //need to remap to a 2d vector to enter to the PID controller
     auto state2d = builder.AddSystem<ScalarTo2Vector>();
     state2d->set_name("state_2d");
     builder.Connect(velocity_extractor->get_output_port(), state2d->get_input_port());
+    
     //target
-    const double desired_speed = -20.0; // 60 rad/s
+    const double desired_speed = -20.0; // 60 rad/s too fast, lowered donw
     Eigen::Vector2d desired_state;
     desired_state << 0, desired_speed;
     auto desired_speed_source =
@@ -225,12 +227,17 @@ int DoMain()
     Eigen::VectorXd kp = Eigen::VectorXd::Constant(1, 1000000);
     Eigen::VectorXd ki = Eigen::VectorXd::Constant(1, 10000.0);
     Eigen::VectorXd kd = Eigen::VectorXd::Constant(1, 50000);
-
+    //the actual controller
     auto pid_controller = builder.AddSystem<drake::systems::controllers::PidController<double>>(kp, ki, kd);
     pid_controller->set_name("PIDController");
     builder.Connect(state2d->get_output_port(), pid_controller->get_input_port_estimated_state());
     builder.Connect(pid_controller->get_output_port(), four_bar.get_actuation_input_port());
     builder.Connect(desired_speed_source->get_output_port(), pid_controller->get_input_port_desired_state());
+
+    //log controller
+    auto pid_controller_logger = drake::systems::LogVectorOutput(pid_controller->get_output_port(), &builder);
+    pid_controller_logger->set_name("pid_controller_logger");
+
 
     // Add default visualization (which sets up Meshcat if available).
     drake::visualization::AddDefaultVisualization(&builder);
@@ -418,11 +425,48 @@ int DoMain()
         file_tip << "," << angular_velocity.x() << "," << angular_velocity.y() << "," << angular_velocity.z();
         file_tip << "\n";
     }
-
-    // Close the file_tip
     file_tip.close();
     std::cout << "Log written to four_bar_vel_tip.csv" << std::endl;
 
+    //PID controller log
+    std::ofstream file_pid("/home/darin/Github/drake/flapgood/opt_data/four_bar_pid.csv");
+    file_pid << "time,torque\n";
+    const auto& pid_logs = pid_controller_logger->FindLog(simulator.get_context());
+    for (int i = 0; i < pid_logs.num_samples(); i++)
+    {
+        file_pid << pid_logs.sample_times()(i) << "," << pid_logs.data().col(i)(0) << "\n";
+    }
+    file_pid.close();
+    std::cout << "Log written to four_bar_pid.csv" << std::endl;
+
+
+    // logger for wing tip angles off fixed
+    //create 3d vector (1.5004972495905828, 0, 5.127977866954097)
+    Eigen::Vector3d fixed_pos(1.5004972495905828, 0, 5.127977866954097);
+    Eigen::Vector2d x_axis(1, 0);
+    std::ofstream file_tip_angle("/home/darin/Github/drake/flapgood/opt_data/four_bar_tip_angle.csv");
+    file_tip_angle << "time,angle\n";
+
+    auto& angle_context = simulator.get_mutable_context();
+    auto& plant_context_log = four_bar.GetMyMutableContextFromRoot(&angle_context);
+    const auto& state_log = state_logger->FindLog(simulator.get_context());
+    const Body<double>& wing_tip = four_bar.GetBodyByName("H");
+    for (int i = 0; i < num_samples; i++)
+    {
+        double time = world_vel_logs.sample_times()(i);
+        const Eigen::VectorXd& x = state_log.data().col(i);
+        angle_context.SetTime(time);
+        four_bar.SetPositionsAndVelocities(&plant_context_log, x);
+
+        const math::RigidTransformd& tip_pose = four_bar.EvalBodyPoseInWorld(plant_context_log, wing_tip);
+        const Eigen::Vector3d& tip_pos = tip_pose.translation();
+        Eigen::Vector2d tip_to_fixed(tip_pos.x() - fixed_pos.x(), tip_pos.z() - fixed_pos.z());
+        double angle_rad = std::atan2(tip_to_fixed.y(), tip_to_fixed.x());
+        double angle_deg = angle_rad * 180 / M_PI;
+        file_tip_angle << time << "," << angle_deg << "\n";
+    }
+    file_tip_angle.close();
+    std::cout << "Log written to four_bar_tip_angle.csv" << std::endl;
     // // (Optionally, keep the process alive so that the Meshcat visualization remains open.)
     while (true)
     {
