@@ -42,13 +42,14 @@ def start_diff_evo(iterations: int = 10, title: str = 'beta_test', popsize: int 
     
     #We are optimizing for link lengths: a,b,c,d,e, and fixed point mag
     original_lengths = np.array([15.25, 25.125 + 15.125, 31.035, 60.035 , 15.125, 53.43])
+    original_lengths = np.array([20.25, 25.125 + 15.125, 31.035, 60.035 , 15.125, 53.43])
     
     #unit scale
     original_lengths = original_lengths / 10
     
     parameter_lower_bound = original_lengths * 0.1
     parameter_lower_bound[5] = 5.343
-    parameter_upper_bound = original_lengths * 6
+    parameter_upper_bound = original_lengths * 2.5
     parameter_upper_bound[5] = 5.343
     bounds = sc.optimize.Bounds(parameter_lower_bound, parameter_upper_bound)
 
@@ -140,4 +141,4 @@ def convert_to_serializable(obj):
 
 
 if __name__ == '__main__':
-    start_diff_evo(title = 'alpha_2', iterations = 100, popsize=50)
+    start_diff_evo(title = 'alpha_4', iterations = 120, popsize=60)

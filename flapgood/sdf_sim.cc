@@ -139,9 +139,9 @@ int DoMain()
     parser.AddModels(sdf_url);
 
     auto meshcat = std::make_shared<drake::geometry::Meshcat>(7001);
+    meshcat->SetCameraPose(Eigen::Vector3d(15, -30, 5), Eigen::Vector3d(15, 0, 5));
     auto& meshcat_visualizer = drake::geometry::MeshcatVisualizer<double>::AddToBuilder(
         &builder, scene_graph, meshcat, drake::geometry::MeshcatVisualizerParams());
-
     // Retrieve the two frames for the bushing.
     // const auto& frame_Hr = four_bar.GetFrameByName("humerus_radial_bushing");
     // const auto& frame_Rh = four_bar.GetFrameByName("radial_humerus_bushing");
@@ -467,6 +467,25 @@ int DoMain()
     }
     file_tip_angle.close();
     std::cout << "Log written to four_bar_tip_angle.csv" << std::endl;
+
+    const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
+    std::ofstream link_c_angle("/home/darin/Github/drake/flapgood/opt_data/four_bar_yellow_angle.csv");
+    link_c_angle << "time,angle\n";
+
+    for (int i = 0; i < num_samples; i++)
+    {
+        double time = world_vel_logs.sample_times()(i);
+        const Eigen::VectorXd& x = state_log.data().col(i);
+        angle_context.SetTime(time);
+        four_bar.SetPositionsAndVelocities(&plant_context_log, x);
+
+        double joint_WC_angle = joint_WC.get_angle(plant_context_log);
+        double joint_WC_angle_deg = joint_WC_angle * 180 / M_PI;
+        link_c_angle << time << "," << joint_WC_angle_deg << "\n";
+    }
+    link_c_angle.close();
+    std::cout << "Log written to four_bar_yellow_angle.csv" << std::endl;
+
     // // (Optionally, keep the process alive so that the Meshcat visualization remains open.)
     // while (true)
     // {

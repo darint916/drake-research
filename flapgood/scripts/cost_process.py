@@ -43,12 +43,28 @@ def max_vel_cost():
     print('Average speed: ', avg_speed)
     print('Max speed: ', max_speed)
     
+    #constraint fix
+    csv_path = os.path.join(current_dir, '..', 'opt_data', 'four_bar_yellow_angle.csv')
+    df = pd.read_csv(csv_path)
+    df = df[(df['time'] >= 3.0) & (df['time'] <= 6.0)]
+    df_angle_exceed = df[(df['angle'] > 80) | (df['angle'] < -80)]
+    if not df_angle_exceed.empty:
+        abs_angle_exceed = df_angle_exceed['angle'].abs()
+        Message.warning('Angle exceed count stamps: ')
+        print(len(df_angle_exceed))
+        print('highest exceed angle: ', df_angle_exceed['angle'].max())
+        print('setting cost 1000 + angle')
+        cost = 1000
+        return (cost, flap_range, avg_downstroke, avg_upstroke)
+        
+    
+    
     #cost function optimize based on z vel max
     # up_weight = 
     # cost = -()2 ,1, 1.5
-    angle_weight = ((max_angle - 10) / 60) * avg_downstroke
+    angle_weight = max(-((max_angle - 120) ** 2) + 1, -1) * avg_downstroke  
     print('Angle weight: ', angle_weight)
-    cost = avg_downstroke ** 2 / avg_upstroke
+    cost = avg_downstroke - avg_upstroke / 5
     print('stroke cost: ', cost)
     cost += angle_weight
     print('Total cost: ', cost)
