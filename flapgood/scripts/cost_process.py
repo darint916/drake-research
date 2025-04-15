@@ -50,15 +50,28 @@ def max_vel_cost():
     df_angle_exceed = df[(df['angle'] > 80) | (df['angle'] < -80)]
     if not df_angle_exceed.empty:
         abs_angle_exceed = df_angle_exceed['angle'].abs()
-        Message.warning('Angle exceed count stamps: ')
+        Message.warning('Angle exceed on C (yellow bar) timestamp counts: ')
         print(len(df_angle_exceed))
         print('highest exceed angle: ', df_angle_exceed['angle'].max())
         print('setting cost 1000 + angle')
         cost = 1000
         return (cost, flap_range, avg_downstroke, avg_upstroke)
         
-    
-    
+    #E bar constraint
+    csv_path = os.path.join(current_dir, '..', 'opt_data', 'four_bar_joint_de_angle.csv')
+    df = pd.read_csv(csv_path)
+    df = df[(df['time'] >= 3.0) & (df['time'] <= 6.0)]
+    df_angle_exceed = df[(df['angle'] > 63) | (df['angle'] < -63)]
+    if not df_angle_exceed.empty:
+        abs_angle_exceed = df_angle_exceed['angle'].abs()
+        Message.warning('Angle exceed on E (joint de) timestamp counts: ')
+        print(len(df_angle_exceed))
+        print('highest exceed angle: ', df_angle_exceed['angle'].max())
+
+        print('setting cost 1000 + angle')
+        cost = 1000
+        return (cost, flap_range, avg_downstroke, avg_upstroke)
+
     #cost function optimize based on z vel max
     # up_weight = 
     # cost = -()2 ,1, 1.5

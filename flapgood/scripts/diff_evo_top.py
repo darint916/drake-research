@@ -145,4 +145,4 @@ def convert_to_serializable(obj):
 
 
 if __name__ == '__main__':
-    start_diff_evo(title = 'alpha_8', iterations = 100, popsize=60)
+    start_diff_evo(title = 'alpha_8', iterations = 110, popsize=70)

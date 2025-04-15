@@ -469,8 +469,12 @@ int DoMain()
     std::cout << "Log written to four_bar_tip_angle.csv" << std::endl;
 
     const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
+    const RevoluteJoint<double>& joint_DE = four_bar.GetJointByName<RevoluteJoint>("joint_DE");
+    
     std::ofstream link_c_angle("/home/darin/Github/drake/flapgood/opt_data/four_bar_yellow_angle.csv");
+    std::ofstream joint_de_angle("/home/darin/Github/drake/flapgood/opt_data/four_bar_joint_de_angle.csv");
     link_c_angle << "time,angle\n";
+    joint_de_angle << "time,angle\n";
 
     for (int i = 0; i < num_samples; i++)
     {
@@ -482,6 +486,10 @@ int DoMain()
         double joint_WC_angle = joint_WC.get_angle(plant_context_log);
         double joint_WC_angle_deg = joint_WC_angle * 180 / M_PI;
         link_c_angle << time << "," << joint_WC_angle_deg << "\n";
+
+        double joint_DE_angle = joint_DE.get_angle(plant_context_log);
+        double joint_DE_angle_deg = joint_DE_angle * 180 / M_PI;
+        joint_de_angle << time << "," << joint_DE_angle_deg << "\n";
     }
     link_c_angle.close();
     std::cout << "Log written to four_bar_yellow_angle.csv" << std::endl;
