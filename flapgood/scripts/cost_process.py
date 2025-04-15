@@ -62,22 +62,25 @@ def max_vel_cost():
     #cost function optimize based on z vel max
     # up_weight = 
     # cost = -()2 ,1, 1.5
-    zero_point = 50
-    peak_weight = 0.8
-    target = 130
-    drop_off_factor = 2.5
+    zero_point = 30
+    peak_weight = 0.4
+    target = 75
+    drop_off_factor = 2
     sigma = (target - zero_point) / drop_off_factor
-    gaussian = np.exp(-0.5 * ((max_angle - target) / sigma) ** 2)
+    gaussian = np.exp(-0.5 * ((flap_range - target) / sigma) ** 2)
     slope = peak_weight / (target - zero_point)
-    if max_angle >= zero_point:
+    
+    if flap_range > target and flap_range < target + (zero_point * 1.3):
+        angle_weight = peak_weight
+    elif flap_range >= zero_point:
         angle_weight = peak_weight * gaussian
     else:
-        angle_weight = slope * (max_angle - zero_point)
+        angle_weight = slope * (flap_range - zero_point)
 
 
     # angle_weight = max(-((max_angle - 120) ** 2) + 1, -1) * avg_downstroke  
     print('Angle weight: ', angle_weight)
-    cost = avg_downstroke - avg_upstroke / 5
+    cost = avg_downstroke - (avg_upstroke / 9)
     print('stroke cost: ', cost)
     cost += angle_weight * avg_downstroke
     print('Total cost: ', cost)
