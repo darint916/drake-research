@@ -44,12 +44,15 @@ def start_diff_evo(iterations: int = 10, title: str = 'beta_test', popsize: int 
     # original_lengths = np.array([15.25, 25.125 + 15.125, 31.035, 60.035 , 15.125, 53.43])
     # original_lengths = np.array([24.25, 25.125 + 15.125, 31.035, 60.035 , 17.125, 53.43])
     # original_lengths = np.array([1.1323307503253162, 7.586594532633477, 7.31476384768117, 11.256667836448015, 0.19107456433101078, 5.343])
+    
+    original_lengths = np.array([2.814350012719076, 5.3467427238920155, 4.799299166855543, 14.904121636572476, 3.827104267654535, 5.343])
+
     #expanded L 5
-    original_lengths = np.array([20.25, 25.125 + 15.125, 31.035, 60.035 , 20.125, 53.43])
+    # original_lengths = np.array([20.25, 25.125 + 15.125, 31.035, 60.035 , 20.125, 53.43])
     
 
     #unit scale
-    original_lengths = original_lengths / 10
+    # original_lengths = original_lengths / 10
     
     parameter_lower_bound = original_lengths * 0.35
     parameter_lower_bound[5] = 5.343
@@ -145,4 +148,4 @@ def convert_to_serializable(obj):
 
 
 if __name__ == '__main__':
-    start_diff_evo(title = 'alpha_8', iterations = 110, popsize=70)
+    start_diff_evo(title = 'alpha_9', iterations = 110, popsize=70)

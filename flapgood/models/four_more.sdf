@@ -285,7 +285,7 @@
                     </box>
                 </geometry>
                 <material>
-                    <diffuse>0 1 1 1</diffuse>
+                    <diffuse>1 1 1 1</diffuse>
                 </material>
             </visual>
         </link>
@@ -303,7 +303,7 @@
                     <iyz>0</iyz>
                 </inertia>
             </inertial>
-            <visual name="G_visual">
+            <visual name="H_visual">
                 <pose>-3.875 0.1 0 0 0 0</pose>
                 <geometry>
                     <box>
@@ -311,7 +311,7 @@
                     </box>
                 </geometry>
                 <material>
-                    <diffuse>1 0 1 1</diffuse>
+                    <diffuse>1 1 1 1</diffuse>
                 </material>
             </visual>
         </link>

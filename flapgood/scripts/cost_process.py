@@ -52,7 +52,7 @@ def max_vel_cost():
         abs_angle_exceed = df_angle_exceed['angle'].abs()
         Message.warning('Angle exceed on C (yellow bar) timestamp counts: ')
         print(len(df_angle_exceed))
-        print('highest exceed angle: ', df_angle_exceed['angle'].max())
+        print('highest exceed angle: ', df_angle_exceed['angle'].abs().max())
         print('setting cost 1000 + angle')
         cost = 1000
         return (cost, flap_range, avg_downstroke, avg_upstroke)

@@ -43,7 +43,7 @@ using Eigen::Vector3d;
 
 // Define gflags parameters (these could be overridden on the command-line).
 DEFINE_double(simulation_time, 15, "Duration of the simulation in seconds.");
-DEFINE_double(force_stiffness, 10000000,
+DEFINE_double(force_stiffness, 30000000,
               "Translational stiffness (N/m) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(force_damping, 100000, "Translational damping (N·s/m) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(torque_stiffness, 300000,
@@ -225,8 +225,8 @@ int DoMain()
         builder.AddSystem<drake::systems::ConstantVectorSource<double>>(desired_state);
 
     Eigen::VectorXd kp = Eigen::VectorXd::Constant(1, 1000000);
-    Eigen::VectorXd ki = Eigen::VectorXd::Constant(1, 10000.0);
-    Eigen::VectorXd kd = Eigen::VectorXd::Constant(1, 50000);
+    Eigen::VectorXd ki = Eigen::VectorXd::Constant(1, 50000.0);
+    Eigen::VectorXd kd = Eigen::VectorXd::Constant(1, 100000);
     //the actual controller
     auto pid_controller = builder.AddSystem<drake::systems::controllers::PidController<double>>(kp, ki, kd);
     pid_controller->set_name("PIDController");
@@ -495,9 +495,9 @@ int DoMain()
     std::cout << "Log written to four_bar_yellow_angle.csv" << std::endl;
 
     // // (Optionally, keep the process alive so that the Meshcat visualization remains open.)
-    // while (true)
-    // {
-    // }
+    while (true)
+    {
+    }
 
     return 0;
 }

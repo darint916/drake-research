@@ -6,7 +6,7 @@ import os
 from mpl_toolkits.mplot3d import Axes3D
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-data_dir = os.path.join(current_dir, '..', 'opt_data', 'alpha_6')
+data_dir = os.path.join(current_dir, '..', 'opt_data', 'alpha_8')
 # Load the optimization results
 with open(os.path.join(data_dir, 'opt_result.json'), 'r') as f:
     results = json.load(f)
