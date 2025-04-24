@@ -34,6 +34,10 @@ def max_vel_cost():
     avg_vz = df['vz'].mean()
     max_vz = df['vz'].max()
     
+    df_downstroke_times = df[df['vz'] < 0]['time'] 
+    df_upstroke_times = df[df['vz'] > 0]['time']
+    
+    
     df['speed'] = np.sqrt(df['vx']**2 + df['vy']**2 + df['vz']**2)
     avg_speed = df['speed'].mean()
     max_speed = df['speed'].max()
@@ -73,32 +77,42 @@ def max_vel_cost():
         return (cost, flap_range, avg_downstroke, avg_upstroke)
 
     #cost function optimize based on z vel max
-    # up_weight = 
-    # cost = -()2 ,1, 1.5
-    zero_point = 30
-    peak_weight = 0.4
-    target = 75
-    drop_off_factor = 2
-    sigma = (target - zero_point) / drop_off_factor
-    gaussian = np.exp(-0.5 * ((flap_range - target) / sigma) ** 2)
-    slope = peak_weight / (target - zero_point)
+    # zero_point = 30
+    # peak_weight = 0.4
+    # target = 75
+    # drop_off_factor = 2
+    # sigma = (target - zero_point) / drop_off_factor
+    # gaussian = np.exp(-0.5 * ((flap_range - target) / sigma) ** 2)
+    # slope = peak_weight / (target - zero_point)
     
-    if flap_range > target and flap_range < target + (zero_point * 1.3):
-        angle_weight = peak_weight
-    elif flap_range >= zero_point:
-        angle_weight = peak_weight * gaussian
-    else:
-        angle_weight = slope * (flap_range - zero_point)
+    # if flap_range > target and flap_range < target + (zero_point * 1.3):
+    #     angle_weight = peak_weight
+    # elif flap_range >= zero_point:
+    #     angle_weight = peak_weight * gaussian
+    # else:
+    #     angle_weight = slope * (flap_range - zero_point)
 
 
-    # angle_weight = max(-((max_angle - 120) ** 2) + 1, -1) * avg_downstroke  
-    print('Angle weight: ', angle_weight)
-    cost = avg_downstroke - (avg_upstroke / 9)
-    print('stroke cost: ', cost)
-    cost += angle_weight * avg_downstroke
-    print('Total cost: ', cost)
-    return (-cost, flap_range, avg_downstroke, avg_upstroke) 
-# 60 30-70
-# 
+    # # angle_weight = max(-((max_angle - 120) ** 2) + 1, -1) * avg_downstroke  
+    # print('Angle weight: ', angle_weight)
+    # cost = avg_downstroke - (avg_upstroke / 9)
+    # print('stroke cost: ', cost)
+    # cost += angle_weight * avg_downstroke
+    # print('Total cost: ', cost)
+    # return (-cost, flap_range, avg_downstroke, avg_upstroke) 
+
+    #cost function for time ratio of upstroke vs downstroke
+
+    if df_downstroke_times.empty or df_upstroke_times.empty:
+        print('No upstroke or downstroke times found')
+        cost = 1000
+        return (cost, flap_range, avg_downstroke, avg_upstroke)
+    upstroke_times = int(df_upstroke_times.count())
+    downstroke_times = int(df_downstroke_times.count())
+    cost = upstroke_times / downstroke_times
+    print("downstroke times: ", downstroke_times)
+    print("upstroke times: ", upstroke_times)
+    return (-cost, flap_range, downstroke_times, upstroke_times)
+
 if __name__ == '__main__':
     max_vel_cost()

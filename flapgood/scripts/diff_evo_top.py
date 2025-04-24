@@ -45,14 +45,14 @@ def start_diff_evo(iterations: int = 10, title: str = 'beta_test', popsize: int 
     # original_lengths = np.array([24.25, 25.125 + 15.125, 31.035, 60.035 , 17.125, 53.43])
     # original_lengths = np.array([1.1323307503253162, 7.586594532633477, 7.31476384768117, 11.256667836448015, 0.19107456433101078, 5.343])
     
-    original_lengths = np.array([2.814350012719076, 5.3467427238920155, 4.799299166855543, 14.904121636572476, 3.827104267654535, 5.343])
+    # original_lengths = np.array([2.814350012719076, 5.3467427238920155, 4.799299166855543, 14.904121636572476, 3.827104267654535, 5.343])
 
     #expanded L 5
-    # original_lengths = np.array([20.25, 25.125 + 15.125, 31.035, 60.035 , 20.125, 53.43])
+    original_lengths = np.array([20.25, 25.125 + 15.125, 31.035, 60.035 , 20.125, 53.43])
     
 
     #unit scale
-    # original_lengths = original_lengths / 10
+    original_lengths = original_lengths / 10
     
     parameter_lower_bound = original_lengths * 0.35
     parameter_lower_bound[5] = 5.343
@@ -87,9 +87,9 @@ def sim_start(opt_params):
     cost, flap_range, avg_downstroke, avg_upstroke= max_vel_cost()
     result_json = {
         "opt_params": opt_params.tolist(),
-        "flap_range": flap_range,
-        "avg_downstroke": avg_downstroke,
-        "avg_upstroke": avg_upstroke,
+        # "flap_range": flap_range,
+        # "avg_downstroke": avg_downstroke,
+        # "avg_upstroke": avg_upstroke,
         "cost": cost
     }
     Message.data("sim iter end \n result_json: " + str(result_json))
@@ -101,7 +101,7 @@ def sim_launch():
     try:
         Message.info("Launching sim")
         results = subprocess.Popen(["bazel", "run", "//flapgood:sdf_sim"], cwd=launch_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        time.sleep(5)
+        time.sleep(2)
         for line in results.stdout:
             Message.info(line)
         Message.debug("Sim print done")
@@ -148,4 +148,6 @@ def convert_to_serializable(obj):
 
 
 if __name__ == '__main__':
-    start_diff_evo(title = 'alpha_9', iterations = 110, popsize=70)
+
+    print(sc.__version__)
+    start_diff_evo(title = 'beta_time_ratio_1', iterations = 110, popsize=70)

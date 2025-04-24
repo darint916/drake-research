@@ -42,7 +42,7 @@ using drake::systems::Simulator;
 using Eigen::Vector3d;
 
 // Define gflags parameters (these could be overridden on the command-line).
-DEFINE_double(simulation_time, 15, "Duration of the simulation in seconds.");
+DEFINE_double(simulation_time, 6.5, "Duration of the simulation in seconds.");
 DEFINE_double(force_stiffness, 30000000,
               "Translational stiffness (N/m) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(force_damping, 100000, "Translational damping (N·s/m) for the LinearBushingRollPitchYaw force element.");
@@ -51,7 +51,8 @@ DEFINE_double(torque_stiffness, 300000,
 DEFINE_double(torque_damping, 1500, "Rotational damping (N·m·s/rad) for the LinearBushingRollPitchYaw force element.");
 DEFINE_double(applied_torque, -10000, "Constant torque applied at joint_WA.");
 DEFINE_double(initial_velocity, 0, "Initial angular rate (radians per second) at joint_WA.");
-
+DEFINE_bool(enable_visualization, false,
+    "If false, skip all MeshCat/visualization setup so simulation runs headless.");
 // Wrap the simulation in a dedicated namespace.
 namespace drake
 {
@@ -138,15 +139,21 @@ int DoMain()
     Parser parser(&four_bar);
     parser.AddModels(sdf_url);
 
-    auto meshcat = std::make_shared<drake::geometry::Meshcat>(7001);
-    meshcat->SetCameraPose(Eigen::Vector3d(15, -30, 5), Eigen::Vector3d(15, 0, 5));
-    auto& meshcat_visualizer = drake::geometry::MeshcatVisualizer<double>::AddToBuilder(
+    std::shared_ptr<drake::geometry::Meshcat> meshcat{};
+    drake::geometry::MeshcatVisualizer<double>* meshcat_visualizer = nullptr;
+    if(FLAGS_enable_visualization)
+    {
+        meshcat = std::make_shared<drake::geometry::Meshcat>(7001);
+        meshcat->SetCameraPose(Eigen::Vector3d(15, -30, 5), Eigen::Vector3d(15, 0, 5));
+        meshcat_visualizer = &drake::geometry::MeshcatVisualizer<double>::AddToBuilder(
         &builder, scene_graph, meshcat, drake::geometry::MeshcatVisualizerParams());
+    }
     // Retrieve the two frames for the bushing.
     // const auto& frame_Hr = four_bar.GetFrameByName("humerus_radial_bushing");
     // const auto& frame_Rh = four_bar.GetFrameByName("radial_humerus_bushing");
     const auto& frame_Hr = four_bar.GetFrameByName("Bc_bushing");
     const auto& frame_Rh = four_bar.GetFrameByName("Cb_bushing");
+
 
     const auto& frame_Bf = four_bar.GetFrameByName("Bf_bushing");
     const auto& frame_Fb = four_bar.GetFrameByName("Fb_bushing");
@@ -218,15 +225,15 @@ int DoMain()
     builder.Connect(velocity_extractor->get_output_port(), state2d->get_input_port());
     
     //target
-    const double desired_speed = -20.0; // 60 rad/s too fast, lowered donw
+    const double desired_speed = -6.28; // 60 rad/s too fast, lowered down to 2 HZ
     Eigen::Vector2d desired_state;
     desired_state << 0, desired_speed;
     auto desired_speed_source =
         builder.AddSystem<drake::systems::ConstantVectorSource<double>>(desired_state);
 
-    Eigen::VectorXd kp = Eigen::VectorXd::Constant(1, 1000000);
+    Eigen::VectorXd kp = Eigen::VectorXd::Constant(1, 2000000);
     Eigen::VectorXd ki = Eigen::VectorXd::Constant(1, 50000.0);
-    Eigen::VectorXd kd = Eigen::VectorXd::Constant(1, 100000);
+    Eigen::VectorXd kd = Eigen::VectorXd::Constant(1, 700000);
     //the actual controller
     auto pid_controller = builder.AddSystem<drake::systems::controllers::PidController<double>>(kp, ki, kd);
     pid_controller->set_name("PIDController");
@@ -240,7 +247,10 @@ int DoMain()
 
 
     // Add default visualization (which sets up Meshcat if available).
-    drake::visualization::AddDefaultVisualization(&builder);
+    if (FLAGS_enable_visualization)
+    {
+        drake::visualization::AddDefaultVisualization(&builder);
+    }
 
     // Build the complete system diagram.
     auto diagram = builder.Build();
@@ -315,7 +325,10 @@ int DoMain()
     simulator.reset_integrator<drake::systems::RungeKutta2Integrator<double>>(1e-4);
     // simulator.reset_integrator<drake::systems::ImplicitEulerIntegrator<double>>(  *diagram,
     // &simulator.get_mutable_context(), 1e-4);
-    meshcat_visualizer.StartRecording(128);
+    if (FLAGS_enable_visualization)
+    {
+        meshcat_visualizer->StartRecording(128);
+    }
     simulator.Initialize();
     simulator.AdvanceTo(FLAGS_simulation_time);
     // meshcat
@@ -327,7 +340,10 @@ int DoMain()
     auto end_time = std::chrono::high_resolution_clock::now();
     std::cout << "Simulation ended at time: " << end_time.time_since_epoch().count() << std::endl;
 
-    meshcat_visualizer.PublishRecording();
+    if (FLAGS_enable_visualization)
+    {
+        meshcat_visualizer->PublishRecording();
+    }
 
     // logger plot of states
     // const auto sim_context = simulator.get_context();
@@ -447,6 +463,10 @@ int DoMain()
     std::ofstream file_tip_angle("/home/darin/Github/drake/flapgood/opt_data/four_bar_tip_angle.csv");
     file_tip_angle << "time,angle\n";
 
+    //Add on tip positions
+    std::ofstream file_tip_pos("/home/darin/Github/drake/flapgood/opt_data/four_bar_tip_pos.csv");
+    file_tip_pos << "time,x,y,z\n";
+
     auto& angle_context = simulator.get_mutable_context();
     auto& plant_context_log = four_bar.GetMyMutableContextFromRoot(&angle_context);
     const auto& state_log = state_logger->FindLog(simulator.get_context());
@@ -457,9 +477,10 @@ int DoMain()
         const Eigen::VectorXd& x = state_log.data().col(i);
         angle_context.SetTime(time);
         four_bar.SetPositionsAndVelocities(&plant_context_log, x);
-
+        
         const math::RigidTransformd& tip_pose = four_bar.EvalBodyPoseInWorld(plant_context_log, wing_tip);
         const Eigen::Vector3d& tip_pos = tip_pose.translation();
+        file_tip_pos << time << "," << tip_pos.x() << "," << tip_pos.y() << "," << tip_pos.z() << "\n";
         Eigen::Vector2d tip_to_fixed(tip_pos.x() - fixed_pos.x(), tip_pos.z() - fixed_pos.z());
         double angle_rad = std::atan2(tip_to_fixed.y(), tip_to_fixed.x());
         double angle_deg = angle_rad * 180 / M_PI;
@@ -467,6 +488,9 @@ int DoMain()
     }
     file_tip_angle.close();
     std::cout << "Log written to four_bar_tip_angle.csv" << std::endl;
+
+    file_tip_pos.close();
+    std::cout << "Log written to four_bar_tip_pos.csv" << std::endl;
 
     const RevoluteJoint<double>& joint_WC = four_bar.GetJointByName<RevoluteJoint>("joint_WC");
     const RevoluteJoint<double>& joint_DE = four_bar.GetJointByName<RevoluteJoint>("joint_DE");
@@ -495,8 +519,11 @@ int DoMain()
     std::cout << "Log written to four_bar_yellow_angle.csv" << std::endl;
 
     // // (Optionally, keep the process alive so that the Meshcat visualization remains open.)
-    while (true)
+    if (FLAGS_enable_visualization)
     {
+        while (true)
+        {
+        }
     }
 
     return 0;
